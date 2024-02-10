@@ -1,0 +1,83 @@
+nui-tree {
+  &::part(nui-tree__toggle) {
+    color: sienna;
+  }
+
+  &::part(nui-tree__leaf) {
+    color: green;
+  }
+
+  &::part(nui-tree__content) {
+    &.nui-tree__root {
+      color: maroon;
+    }
+  }
+}
+
+.tree-file nui-tree {
+  --nui-tree-icon-width: 1.25em;
+
+  &:not([root]) {
+    --nui-tree-offset: var(--nui-tree-icon-width);
+  }
+
+  &::part(content) {
+    position: relative;
+    display: block;
+
+    &::before,
+    &::after {
+      width: 1.25em;
+      display: inline-block;
+      text-rendering: auto;
+      font: var(--fa-font-duotone);
+      text-align: center;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    &::before {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--fa-primary-color, inherit);
+      opacity: var(--fa-primary-opacity, 1.0);
+      padding-right: .25rem;
+    }
+
+    &::after {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      color: var(--fa-secondary-color, inherit);
+      opacity: var(--fa-secondary-opacity, 0.4);
+    }
+  }
+
+  &::part(toggle) {
+    &::before {
+      content: '\f07b';
+    }
+    &::after {
+      content: '\f07b\f07b';
+    }
+  }
+
+  &[open]::part(toggle) {
+    &::before {
+      content: '\f07c';
+    }
+    &::after {
+      content: '\f07c\f07c';
+    }
+  }
+
+  &::part(leaf) {
+    &::before {
+      content: '\f15b';
+    }
+    &::after {
+      content: '\f15b\f15b';
+    }
+  }
+}

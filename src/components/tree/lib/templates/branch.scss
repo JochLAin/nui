@@ -1,0 +1,5 @@
+@forward "./abstract";
+
+:host::part(nui-tree__branch) {
+  padding-left: var(--nui-tree--offset, 1.15em);
+}

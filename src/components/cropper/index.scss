@@ -1,0 +1,62 @@
+:host {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+
+  &:focus {
+    --img-crop-backdrop: rgba(lightgreen / 30%);
+  }
+}
+
+canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  image-rendering: pixelated;
+}
+
+canvas#front {
+  background: var(--img-crop-background, #FFF);
+  z-index: 3;
+}
+
+canvas#back {
+  filter: blur(2px);
+}
+
+img,
+input {
+  display: none;
+  pointer-events: none;
+  user-select: none;
+  visibility: hidden;
+}
+
+#backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 2;
+  background-color: var(--img-crop-backdrop, rgba(#000, .5));
+  filter: blur(10px);
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  #backdrop {
+    background-color: var(--img-crop-backdrop, rgba(#000, .5));
+  }
+}
+@media (prefers-color-scheme: light) {
+  #backdrop {
+    background-color: var(--img-crop-backdrop, rgba(#FFF, .5));
+  }
+}

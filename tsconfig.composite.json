@@ -1,0 +1,21 @@
+{
+  "exclude": ["node_modules"],
+  "include": [
+    "./src/components/cropper/**/*.ts",
+    "./src/components/tree/**/*.ts",
+    "./src/tools/canvas/**/*.ts",
+    "./src/tools/element/**/*.ts",
+    "./src/tools/timeout/**/*.ts",
+    "./src/tools/tree/**/*.ts",
+    "./src/website/**/*.ts"
+  ],
+  "references": [
+    { "path": "./src/components/cropper"},
+    { "path": "./src/components/tree"},
+    { "path": "./src/tools/canvas"},
+    { "path": "./src/tools/element"},
+    { "path": "./src/tools/timeout"},
+    { "path": "./src/tools/tree"},
+    { "path": "./src/website"}
+  ]
+}
