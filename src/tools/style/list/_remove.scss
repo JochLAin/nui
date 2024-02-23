@@ -1,0 +1,26 @@
+@use "sass:list" as _list;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group list
+///
+/// Remove an item from a list.
+/// @param {list} $list - The list.
+/// @param {number} $idx - The index of the item to remove.
+/// @return {list} - The list without the item.
+@function remove($list, $idx) {
+  $e: type.check($list, type.list());
+  $e: type.check($idx, type.number());
+
+  $result: ();
+  $len: _list.length($list);
+  $idx: if($idx < 0, $len + $idx + 1, $idx);
+  @for $i from 1 through $len {
+    @if $i != $idx {
+      $result: _list.append($result, nth($list, $i));
+    }
+  }
+
+  //$result: _list.join((), $result, $separator: _list.separator($list), $bracketed: _list.is-bracketed($list));
+  @return $result;
+}

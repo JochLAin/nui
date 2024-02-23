@@ -1,5 +1,5 @@
-import { element, property } from "@nui-tools/element";
-import styles from "!!raw-loader!sass-loader!./index.scss";
+import { HTMLNuiElement, element } from "@nui-tools/decorators";
+import styles from "./index.scss";
 
 const TEMPLATE_LEAF = document.createElement('template');
 TEMPLATE_LEAF.innerHTML = `
@@ -22,11 +22,9 @@ TEMPLATE_BRANCH.innerHTML = `
 
 
 @element('nui-menu')
-export default class HTMLMenuElement extends HTMLElement {
-  readonly #shadow: ShadowRoot;
-
+export default class HTMLMenuElement extends HTMLNuiElement {
   constructor() {
     super();
-    this.#shadow = this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' });
   }
 }

@@ -78,7 +78,7 @@ async function getModuleFileContent(mod: string, file: string) {
   }
 
   async function replaceStyles(content: string) {
-    const matches = Array.from(content.matchAll(/(import (\w+) from ["']!!raw-loader!sass-loader!([\w./]+)["'];)/g)).map((match) => match.slice(1, 4));
+    const matches = Array.from(content.matchAll(/(import (\w+) from ["']([\w./]+)["'];)/g)).map((match) => match.slice(1, 4));
     for (let idx = 0; idx < matches.length; idx++) {
       const [line, name, file] = matches[idx];
       const scss = (await fs.readFile(path.resolve(dirname, file))).toString();

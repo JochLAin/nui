@@ -1,0 +1,8 @@
+@use "../settings" as *;
+
+@function reset() {
+  $props: () !global;
+  //$dictionary-concrete: () !global;
+
+  @return ();
+}

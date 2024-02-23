@@ -1,0 +1,29 @@
+@use "../settings" as *;
+@use "../map";
+@use "../view";
+@use "./generate-single" as *;
+
+@mixin generate(
+  $utilities: (), // map list
+  $breakpoints: $breakpoints, // map
+  $use-important: $use-utility-important // boolean
+) {
+  @each $breakpoint in map.keys($breakpoints) {
+    @include view.breakpoint-up($breakpoint) {
+      $infix: view.breakpoint-infix($breakpoint, $breakpoints);
+      @each $key, $utility in $utilities {
+        @if type-of($utility) == "map" and (map.get($utility, responsive) or $infix == "") {
+          @include generate-single($utility, $infix, $use-important);
+        }
+      }
+    }
+  }
+
+  @media print {
+    @each $key, $utility in $utilities {
+      @if type-of($utility) == "map" and map.get($utility, print) == true {
+        @include generate-single($utility, "-print", $use-important);
+      }
+    }
+  }
+}

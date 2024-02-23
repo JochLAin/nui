@@ -1,0 +1,47 @@
+@use "../settings.scss" as *;
+@use "../list";
+@use "../map";
+@use "../meta";
+@use "../string";
+
+@mixin generate-single(
+  $utility, // map
+  $infix: null, // string|null
+  $use-important: $use-utility-important, // boolean
+) {
+  $values: map.get($utility, values);
+  @if meta.type-of($values) == "string" or meta.type-of(nth($values, 1)) != "list" {
+    $values: list.zip($values, $values);
+  }
+
+  @each $key, $value in $values {
+    $properties: map.get($utility, property);
+
+    @if meta.type-of($properties) == "string" {
+      $properties: list.append((), $properties);
+    }
+
+    $property-class: if(map.has-key($utility, class), map.get($utility, class), nth($properties, 1));
+    $property-class: if($property-class == null, "", $property-class);
+    $state: if(map.has-key($utility, state), map.get($utility, state), ());
+    $infix: if($property-class == "" and string.slice($infix, 1, 1) == ":", string.slice($infix, 2), $infix);
+    $property-class-modifier: if($key, if($property-class == "" and $infix == "", "", "-") + $key, "");
+
+    $is-rtl: map.get($utility, rtl);
+    @if $value != null {
+      .#{$infix + $property-class + $property-class-modifier} {
+        @each $property in $properties {
+          #{$property}: $value if($use-important, !important, null);
+        }
+      }
+
+      @each $pseudo in $state {
+        .#{$infix + $property-class + $property-class-modifier}-#{$pseudo}:#{$pseudo} {
+          @each $property in $properties {
+            #{$property}: $value if($use-important, !important, null);
+          }
+        }
+      }
+    }
+  }
+}

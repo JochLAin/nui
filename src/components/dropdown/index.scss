@@ -1,0 +1,9 @@
+nui-collapse::part(details) {
+  position: relative;
+}
+
+nui-collapse::part(container) {
+  position: absolute;
+  top: 100%;
+  left: 0;
+}

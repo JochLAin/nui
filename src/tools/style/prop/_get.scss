@@ -1,0 +1,51 @@
+@use "../settings" as *;
+@use "../string";
+@use "../type";
+@use "./get-value" as *;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group prop
+///
+/// Get a CSS variable.
+/// @param {string} $name - The name of the variable.
+/// @param {any|null} $default - The default value if the variable is not defined.
+/// @param {string} $prefix-prop - The prefix to use to declare the variable.
+/// @param {string} $separator-prefix - The separator to use to concatenate the prefix and the key.
+/// @param {boolean} $use-prop - Whether to use the CSS `var` function or return the value
+/// @param {boolean} $use-value-as-default - Whether to use the saved value as default value
+/// @return {string|any} - The variable.
+@function get($name, $default: null, $prefix-prop: $prefix-prop, $separator-prefix: $separator-prefix, $use-prop: $use-prop, $use-value-as-default: $use-dictionary-as-default) {
+  $e: type.check($name, type.string());
+  $e: type.check($prefix-prop, type.string());
+  $e: type.check($separator-prefix, type.string());
+  $e: type.check($use-prop, type.boolean());
+  $e: type.check($use-value-as-default, type.boolean());
+
+  @if not $use-prop and not string.is-private($name) {
+    @if $default {
+      @return $default;
+    }
+    @return get-value($name);
+  }
+
+  @if type-of($name) == 'string' and string.is-private($name) {
+    $name: "-#{string.prefix(string.slice($name, 2), $prefix-prop, $separator-prefix)}";
+  } @else {
+    $name: string.prefix($name, $prefix-prop, $separator-prefix);
+  }
+
+  @if $default {
+    @return var(--#{$name}, $default);
+  }
+
+  //$value: get-value($name);
+  //@if not $use-prop and $value {
+  //  @return $value;
+  //}
+  //
+  //@if $use-value-as-default {
+  //  @return var(--#{$name}, #{$value});
+  //}
+
+  @return var(--#{$name});
+}

@@ -1,0 +1,11 @@
+@use "./is-object" as *;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group meta
+///
+/// Returns whether `$value` is a primitive.
+/// @param {any} $value - The value.
+/// @return {boolean} - Whether `$value` is a primitive.
+@function is-primitive($value) {
+  @return not is-object($value);
+}

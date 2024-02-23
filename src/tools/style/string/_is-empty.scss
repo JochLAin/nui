@@ -1,0 +1,18 @@
+@use "sass:meta" as _meta;
+@use "sass:string" as _string;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group string
+///
+/// Returns whether `$text` is empty.
+/// @param {number|string|null} $text - The text.
+/// @return {boolean} `true` if `$text` is empty or null, `false` otherwise.
+@function is-empty($text) {
+  $e: type.check($text, type.orX((type.number() type.string()), $nullable: true));
+
+  @if number == _meta.type-of($text) {
+    $text: "#{$text}";
+  }
+  @return $text == null or _string.length($text) == 0;
+}

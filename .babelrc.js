@@ -7,7 +7,7 @@ module.exports = function (api) {
       "@babel/preset-typescript",
     ],
     plugins: [
-      ["@babel/plugin-proposal-class-properties", { "loose": false }],
+      ["@babel/plugin-proposal-classes-properties", { "loose": false }],
       "@babel/plugin-proposal-export-default-from",
       ["@babel/plugin-proposal-element", { "legacy": true }],
       "@babel/plugin-proposal-do-expressions",

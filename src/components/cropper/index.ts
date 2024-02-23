@@ -1,8 +1,8 @@
 import { Axe, Corner, Side } from "@nui-tools/canvas";
-import { element, property } from "@nui-tools/element";
+import { HTMLNuiElement, element, property } from "@nui-tools/decorators";
 import * as utils from "@nui-tools/canvas";
 import { throttle } from "@nui-tools/timeout";
-import styles from "!!raw-loader!sass-loader!./index.scss";
+import styles from "./index.scss";
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -20,7 +20,7 @@ enum ExportType {
 }
 
 @element('cropper')
-export class HTMLImageCropElement extends HTMLElement {
+export class HTMLImageCropElement extends HTMLNuiElement {
   readonly #shadow: ShadowRoot;
   readonly #front: CanvasRenderingContext2D;
   readonly #back: CanvasRenderingContext2D;

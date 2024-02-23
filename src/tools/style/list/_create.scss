@@ -1,0 +1,19 @@
+@use "sass:list" as _list;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group list
+///
+/// Create a list from or without a value.
+/// @param {any} $value [null] - The value to create a list from or none.
+/// @param {string} $separator [null] - The separator used for the list.
+/// @param {boolean} $bracketed [false] - If the list is bracketed.
+/// @return {list} - The created list with the value or empty.
+@function create($value: null, $separator: auto, $bracketed: auto) {
+  //$result: _list.join((), (), $separator, $bracketed);
+  $result: ();
+  @if null == $value {
+    @return $result;
+  }
+
+  @return _list.append($result, $value);
+}

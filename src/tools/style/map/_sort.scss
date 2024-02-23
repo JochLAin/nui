@@ -1,0 +1,22 @@
+@use "sass:map" as _map;
+@use "../list" as list;
+@use "../type" as type;
+@use "./create" as *;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group map
+///
+/// Sort a map by keys.
+/// @param {map} $map - The map.
+/// @return {map} - The sorted map.
+@function sort($map) {
+  $e: type.check($map, type.map());
+
+  $keys: list.sort(_map.keys($map));
+  $result: create();
+  @each $key in $keys {
+    $result: _map.merge($result, ($key: _map.get($map, $key)));
+  }
+
+  @return $result;
+}

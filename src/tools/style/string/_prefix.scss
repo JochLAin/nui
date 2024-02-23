@@ -1,0 +1,13 @@
+@use "../type" as *;
+
+@function prefix(
+  $text: null, // string or null
+  $prefix: null, // string or null
+  $separator: '' // string
+) {
+  $e: check($text, orX(number() string(), $nullable: true));
+  $e: check($prefix, orX(number() string(), $nullable: true));
+  $e: check($separator, orX(number() string()));
+
+  @return if($prefix != null, if($text != null, "#{$prefix}#{$separator}#{$text}", $prefix), $text);
+}

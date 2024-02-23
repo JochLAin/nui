@@ -1,0 +1,10 @@
+@use "sass:map" as _map;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group map
+///
+/// Create a map.
+/// @return {map} - The created map.
+@function create() {
+  @return _map.remove((x: 1), x);
+}

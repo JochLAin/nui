@@ -1,0 +1,23 @@
+@use "../settings" as *;
+@use "../map";
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group prop
+///
+/// Flatten props.
+/// @param {string|map} $name - The name of the variable or a map of variables.
+/// @param {string|map|null} $value - The value of the variable or a map of variables.
+/// @param {string} $separator - The separator to use to flatten the map.
+/// @return {map} - The flatten map.
+@function flatten($name, $value, $separator: $separator-prefix) {
+  @if type-of($name) == 'map' {
+    $value: $name;
+    $name: null;
+  }
+
+  @if type-of($value) == 'map' {
+    @return map.flatten($value, $name, $separator);
+  }
+
+  @return ($name: $value);
+}

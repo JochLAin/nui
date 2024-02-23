@@ -1,0 +1,64 @@
+@use "sass:math" as _math;
+@use "sass:map" as _map;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group math
+///
+/// Divide two numbers.
+/// @param {number|null} $dividend - The dividend.
+/// @param {number} $divisor - The divisor.
+/// @param {number} $precision - The precision.
+/// @return {number} - The result.
+@function divide($dividend, $divisor, $precision: 10) {
+  $e: type.check($dividend, type.number($nullable: true));
+  $e: type.check($divisor, type.number());
+  $e: type.check($precision, type.number());
+
+  $sign: if(0 < $dividend and 0 < $divisor or 0 < $dividend and $divisor < 0, 1, -1);
+  $dividend: _math.abs($dividend);
+  $divisor: _math.abs($divisor);
+
+  @if null == $dividend or 0 == $dividend {
+    @return 0;
+  }
+
+  @if 0 == $divisor {
+    @error "Cannot divide by 0";
+  }
+
+  $remainder: $dividend;
+  $result: 0;
+  $factor: 10;
+
+  @while ($remainder > 0 and $precision >= 0) {
+    $quotient: 0;
+    @while ($remainder >= $divisor) {
+      $remainder: $remainder - $divisor;
+      $quotient: $quotient + 1;
+    }
+    $result: $result * 10 + $quotient;
+    $factor: $factor * .1;
+    $remainder: $remainder * 10;
+    $precision: $precision - 1;
+    @if (0 > $precision and $remainder >= $divisor * 5) {
+      $result: $result + 1;
+    }
+  }
+
+  $result: $result * $factor * $sign;
+  $dividend-unit: _math.unit($dividend);
+  $divisor-unit: _math.unit($divisor);
+  $unit-map: (
+    "px": 1px,
+    "rem": 1rem,
+    "em": 1em,
+    "%": 1%
+  );
+
+  @if ($dividend-unit != $divisor-unit and _map.has-key($unit-map, $dividend-unit)) {
+    $result: $result * _map.get($unit-map, $dividend-unit);
+  }
+
+  @return $result;
+}

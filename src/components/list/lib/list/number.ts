@@ -1,5 +1,5 @@
-import { element } from "@nui-tools/element";
-import styles from "!!raw-loader!sass-loader!./number.scss";
+import { HTMLNuiElement, element } from "@nui-tools/decorators";
+import styles from "./number.scss";
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -10,7 +10,7 @@ template.innerHTML = `
 `;
 
 @element('nui-list-number')
-export class HTMLNuiListNumberElement extends HTMLElement {
+export class HTMLNuiListNumberElement extends HTMLNuiElement {
   #shadow: ShadowRoot;
 
   constructor() {

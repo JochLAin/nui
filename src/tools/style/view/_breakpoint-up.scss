@@ -1,0 +1,13 @@
+@use "../settings" as *;
+@use "./breakpoint-min" as *;
+
+@mixin breakpoint-up($name, $breakpoints: $breakpoints) {
+  $min: breakpoint-min($name, $breakpoints);
+  @if $min {
+    @media (min-width: $min) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}

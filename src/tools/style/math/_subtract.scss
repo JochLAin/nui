@@ -1,0 +1,40 @@
+@use "sass:math" as _math;
+@use "sass:meta" as _meta;
+@use "sass:string" as _string;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group math
+///
+/// Subtracts two numbers or strings.
+/// @param {number|string|null} $value1 - The first value.
+/// @param {number|string|null} $value2 - The second value.
+/// @param {boolean} $return-calc - Whether to return a calc() function.
+/// @return {number|string} - The result.
+@function subtract($value1, $value2, $return-calc: true) {
+  $e: type.check($value1, type.orX((type.number() type.string()), $nullable: true));
+  $e: type.check($value2, type.orX((type.number() type.string()), $nullable: true));
+  $e: type.check($return-calc, type.boolean());
+
+  @if null == $value1 and null == $value2 {
+    @return null;
+  }
+
+  @if null == $value1 {
+    @return -$value2;
+  }
+
+  @if null == $value2 {
+    @return $value1;
+  }
+
+  @if number == _meta.type-of($value1) and number == _meta.type-of($value2) and _math.compatible($value1, $value2) {
+    @return $value1 - $value2;
+  }
+
+  @if number != _meta.type-of($value2) {
+    $value2: unquote("(") + $value2 + unquote(")");
+  }
+
+  @return if($return-calc == true, calc(#{$value1} - #{$value2}), $value1 + _string.unquote(" - ") + $value2);
+}

@@ -1,0 +1,26 @@
+@use "sass:map" as _map;
+@use "sass:meta" as _meta;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group map
+///
+/// Returns a new map with the same keys as `$map` but with the values
+/// @param {map} $map - The map.
+/// @param {string} $prefix - The prefix to add to the keys.
+/// @return {map} - The new map.
+@function negativify($map: (), $prefix: 'n') {
+  $e: type.check($map, type.map());
+  $e: type.check($prefix, type.string());
+
+  $result: ();
+  @each $key, $value in $map {
+    @if $key != 0 {
+      $result: _map.merge($result, (
+        "#{$prefix}#{$key}": $value * -1,
+      ));
+    }
+  }
+
+  @return $result;
+}

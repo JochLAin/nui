@@ -1,6 +1,6 @@
-import { element, property } from "@nui-tools/element";
-import { getPackageName, getPrivatePackageName } from "@nui-tools/core/constants";
-import styles from "!!raw-loader!sass-loader!./index.scss";
+import { HTMLNuiElement, element } from "@nui-tools/decorators";
+import { getPrivatePackageName } from "@nui-tools/core/constants";
+import styles from "./index.scss";
 
 const EVENT_APPEND_CHILD = getPrivatePackageName('appended-child', 'nui-list');
 
@@ -30,7 +30,7 @@ TEMPLATE_LIST.innerHTML = `
 `;
 
 @element('nui-list')
-export class HTMLNuiListElement extends HTMLElement {
+export class HTMLNuiListElement extends HTMLNuiElement {
   #shadow: ShadowRoot;
 
   constructor() {

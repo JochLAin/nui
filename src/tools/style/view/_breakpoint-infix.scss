@@ -1,0 +1,6 @@
+@use "../settings" as *;
+@use "./breakpoint-min" as *;
+
+@function breakpoint-infix($name, $breakpoints: $breakpoints, $separator: $separator-query) {
+  @return if(breakpoint-min($name, $breakpoints) == null, "", "#{$name}#{$separator}");
+}

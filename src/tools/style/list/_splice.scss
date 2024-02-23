@@ -1,0 +1,34 @@
+@use "sass:list" as _list;
+@use "sass:math" as _math;
+@use "../type" as type;
+@use "./concat" as *;
+@use "./slice" as *;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group list
+///
+/// Remove and/or add items to a list.
+/// @param {list} $list - The list.
+/// @param {number} $offset [length($list)] - The offset where to start removing items.
+/// @param {number} $length [0] - The number of items to remove.
+/// @param {list} $append [()] - The list of items to add.
+/// @return {list} - The list with items removed and/or added.
+@function splice($list, $offset: _list.length($list), $length: 0, $append: ()) {
+  $e: type.check($list, type.list());
+  $e: type.check($offset, type.number());
+  $e: type.check($length, type.number());
+  $e: type.check($append, type.list());
+
+  @if $offset < 0 {
+    $offset: _list.length($list) + $offset;
+  }
+
+  $offset: _math.max(0, _math.min(_list.length($list), $offset));
+  $end: _math.min(_list.length($list), _math.max($offset, $offset + $length));
+
+  @return concat(
+      slice($list, 0, $offset),
+      $append,
+      slice($list, $end)
+  );
+}

@@ -1,0 +1,9 @@
+:host {
+  ---nui-branch--content-offset: var(--nui-branch--content-offset, var(--nui-collapse--content-offset, var(--nui-collapse--default-toggle-offset)));
+  ---nui-branch--toggle-offset: var(--nui-branch--toggle-offset, var(--nui-collapse--toggle-offset, var(--nui-caret--offset, var(--nui-collapse--default-toggle-offset))));
+}
+
+nui-collapse {
+  --nui-collapse--content-offset: var(---nui-branch--content-offset);
+  --nui-collapse--toggle-offset: var(---nui-branch--toggle-offset);
+}

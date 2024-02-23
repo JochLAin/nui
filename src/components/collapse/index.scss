@@ -1,0 +1,53 @@
+@use "@nui-tools/style/geometry" as *;
+
+//:root {
+//  --nui-collapse--default-toggle-offset: .875em;
+//}
+
+:host {
+  ---nui-collapse--content-offset: var(--nui-collapse--content-offset, 0);
+  ---nui-collapse--toggle-offset: var(--nui-collapse--toggle-offset, var(--nui-collapse--default-toggle-offset));
+}
+
+summary {
+  position: relative;
+
+  &::marker {
+    display: inline-block;
+    width: var(---nui-collapse--toggle-offset);
+  }
+}
+
+.container {
+  display: grid;
+  padding-left: var(---nui-collapse--content-offset);
+  overflow: hidden;
+  animation-duration: 120ms;
+
+  details.animated & {
+    animation-name: grid-expand;
+    animation-timing-function: ease-out;
+  }
+
+  details.collapsing & {
+    animation-direction: reverse;
+    animation-timing-function: ease-in;
+  }
+
+  details[open]:not(.animated):not(.collapsing) & {
+    overflow: visible;
+  }
+}
+
+.content {
+  min-height: 0;
+}
+
+@keyframes grid-expand {
+  0% {
+    grid-template-rows: 0fr;
+  }
+  100% {
+    grid-template-rows: 1fr;
+  }
+}

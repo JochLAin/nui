@@ -1,0 +1,10 @@
+@use "../settings" as *;
+@use "../map";
+
+@function get-value($name) {
+  @return if(
+      map.has-key($dictionary-abstract, $name),
+      map.get($dictionary-abstract, $name),
+      map.get($dictionary-concrete, $name)
+  );
+}

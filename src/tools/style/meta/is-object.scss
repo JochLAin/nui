@@ -1,0 +1,13 @@
+@use "sass:meta" as _meta;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group meta
+///
+/// Returns whether `$value` is an object.
+/// @param {any} $value - The value.
+/// @return {boolean} - Whether `$value` is an object.
+@function is-object($value) {
+  $type: _meta.type-of($value);
+
+  @return arglist == $type or list == $type or map == $type;
+}

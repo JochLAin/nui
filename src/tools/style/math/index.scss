@@ -1,0 +1,15 @@
+@forward "sass:math";
+@forward "./add";
+@forward "./divide";
+@forward "./multiply";
+@forward "./subtract";
+
+:host {
+  --sqrt-2: 1.41421356237;
+  --sqrt-3: 1.73205080757;
+
+  @supports (--value: sqrt(3)) {
+    --sqrt-2: sqrt(2);
+    --sqrt-3: sqrt(3);
+  }
+}

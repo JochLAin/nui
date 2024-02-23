@@ -1,0 +1,28 @@
+@use "sass:math" as _math;
+@use "sass:meta" as _meta;
+@use "sass:string" as _string;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group math
+///
+/// Multiply two numbers or two strings.
+/// @param {number|string|null} $value1 - The first value.
+/// @param {number|string|null} $value2 - The second value.
+/// @param {boolean} $return-calc - Whether to return a calc() function.
+/// @return {number|string} - The result.
+@function multiply($value1, $value2, $return-calc: true) {
+  $e: type.check($value1, type.orX((type.number() type.string()), $nullable: true));
+  $e: type.check($value2, type.orX((type.number() type.string()), $nullable: true));
+  $e: type.check($return-calc, type.boolean());
+
+  @if null == $value1 or 0 == $value1 or null == $value2 or 0 == $value2 {
+    @return 0;
+  }
+
+  @if _meta.type-of($value1) == number and _meta.type-of($value2) == number and _math.compatible($value1, $value2) {
+    @return $value1 * $value2;
+  }
+
+  @return if($return-calc == true, calc(#{$value1} * #{$value2}), $value1 + _string.unquote(" * ") + $value2);
+}

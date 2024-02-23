@@ -1,0 +1,433 @@
+@use "sass:list" as _list;
+@use "sass:map" as _map;
+@use "sass:meta" as _meta;
+
+$symbol: "$$type-of";
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                       ERROR                                                        //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@function _get-printable-error-path($path: null) {
+  @if null != $path {
+    @if 'arglist' != _meta.type-of($path) {
+      @error invalid-type($path, $expected: 'list');
+    }
+
+    $printablePath: '';
+    @each $part in $path {
+      @if '' == $printablePath {
+        $printablePath: $part;
+      } @else {
+        $printablePath: "#{$printablePath}[#{$part}]";
+      }
+    }
+    $path: $printablePath;
+  }
+
+  @return if(null == $path or '' == $path, '', ' at #{$path}');
+}
+
+@function invalid-type($assert, $expected, $path: null, $name: 'type') {
+  @return 'Invalid #{$name}: expected #{$expected}#{_get-printable-error-path($path)}, got #{_meta.type-of($assert)} => #{_meta.inspect($assert)}';
+}
+
+@function invalid-extra-key($assert, $key, $path: null, $name: null) {
+  @return 'Found extra key "#{$key}"#{_get-printable-error-path($path)} #{if($name == null, '', ' in #{$name}')} => #{_meta.inspect($assert)}';
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                     DESCRIPTOR                                                     //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@function check-descriptor-type($type) {
+  $type-of: _meta.type-of($type);
+  @if null != $type and 'string' != $type-of {
+    @if 'list' != $type-of and 'map' != $type-of {
+      @return invalid-type($type, 'string or type', $name: 'type descriptor');
+    }
+
+    // Is it a type descriptor ?
+    @if 'map' == $type-of and null != _map.get($type, $symbol) {
+      @return check-descriptor($type);
+    }
+
+    // Is it a list of type descriptors ?
+    @if 'list' == $type-of {
+      @each $item in $type {
+        $error: check-descriptor-type($item);
+        @if $error {
+          @return $error;
+        }
+      }
+      @return null;
+    }
+
+    // Is it a shape type descriptors ?
+    @if 'map' == $type-of {
+      @each $key, $value in $type {
+        $error: check-descriptor-type($value);
+        @if $error {
+          @return $error;
+        }
+      }
+      @return null;
+    }
+
+    // Should never happen
+    @return invalid-type($type, 'string or type', $name: 'unexpected type');
+  }
+
+  @return null;
+}
+
+@function check-descriptor($descriptor) {
+  @if 'map' != _meta.type-of($descriptor) {
+    @return invalid-type($descriptor, 'map', $name: 'type descriptor');
+  }
+  @if not _map.has-key($descriptor, $symbol) {
+    @return 'Type descriptor is not part of this module';
+  }
+
+  $name: _map.get($descriptor, name);
+  $type: _map.get($descriptor, type);
+  $expanded: _map.get($descriptor, expanded);
+  $nullable: _map.get($descriptor, nullable);
+
+  $error: check-descriptor-type($type);
+  @if $error {
+    @return $error;
+  }
+
+  @if null != $expanded and 'string' != _meta.type-of($expanded) {
+    @return invalid-type($expanded, 'string or null', $name: 'expanded descriptor');
+  }
+  @if $nullable != true and $nullable != false and $nullable != null {
+    @return invalid-type($nullable, 'boolean', $name: 'nullable descriptor');
+  }
+  @if 'string' != _meta.type-of($name) {
+    @return invalid-type($name, 'string', $name: 'descriptor name');
+  }
+
+  @return null;
+}
+
+@function create-descriptor($type, $nullable: null, $expanded: null, $name: null) {
+  $name: if(null == $name, if($expanded, $expanded, $type), $name);
+  $descriptor: ($symbol: true, name: $name, type: $type, expanded: $expanded, nullable: $nullable);
+
+  $error: check-descriptor($descriptor);
+  @if $error {
+    @error $error;
+  }
+
+  @return $descriptor;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                       TYPES                                                        //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@function any($nullable: null) {
+  @return create-descriptor('any', $nullable);
+}
+
+@function null($nullable: null) {
+  @return create-descriptor('null', $nullable);
+}
+
+@function boolean($nullable: null) {
+  @return create-descriptor('bool', $nullable);
+}
+
+@function number($nullable: null) {
+  @return create-descriptor('number', $nullable);
+}
+
+@function color($nullable: null) {
+  @return create-descriptor('color', $nullable);
+}
+
+@function string($nullable: null) {
+  @return create-descriptor('string', $nullable);
+}
+
+@function closure($nullable: null, $name: null) {
+  @return create-descriptor('function', $nullable, null, $name);
+}
+
+@function list($type: null, $name: null, $nullable: null) {
+  @if null != $type {
+    $error: check-descriptor($type);
+    @if null != $error {
+      @error $error;
+    }
+  }
+
+  @return create-descriptor($type, $nullable, 'list', $name);
+}
+
+@function args($type: null, $nullable: null) {
+  @if null != $type {
+    $error: check-descriptor($type);
+    @if null != $error {
+      @error $error;
+    }
+  }
+
+  @return create-descriptor($type, $nullable, 'arglist');
+}
+
+@function map($type: null, $name: null, $nullable: null) {
+  @if null != $type {
+    $error: check-descriptor($type);
+    @if null != $error {
+      @error $error;
+    }
+  }
+
+  @return create-descriptor($type, $nullable, 'map', $name);
+}
+
+@function intersection($types, $name: null, $nullable: null) {
+  @if 'list' != _meta.type-of($types) {
+    @error invalid-type($types, $expected: 'list', $type: 'intersection');
+  }
+  @each $type in $types {
+    $error: check-descriptor($type);
+    @if null != $error {
+      @error $error;
+    }
+  }
+
+  @return create-descriptor($types, $nullable, 'intersection', $name);
+}
+
+// Alias for intersection
+@function andX($types, $name: null, $nullable: null) {
+  @return intersection($types, $name, $nullable);
+}
+
+@function union($types, $name: null, $nullable: null) {
+  @if 'list' != _meta.type-of($types) {
+    @error invalid-type($types, $expected: 'list', $type: 'union');
+  }
+  @each $type in $types {
+    $error: check-descriptor($type);
+    @if null != $error {
+      @error $error;
+    }
+  }
+
+  @return create-descriptor($types, $nullable, 'union', $name);
+}
+
+// Alias for union
+@function orX($types, $name: null, $nullable: null) {
+  @return union($types, $name, $nullable);
+}
+
+@function shape($type, $name: null, $nullable: null) {
+  @if 'map' != _meta.type-of($type) {
+    @error invalid-type($type, $expected: 'map', $type: 'shape');
+  }
+  @return create-descriptor($type, $nullable, 'shape', $name);
+}
+
+@function exact($type, $name: null, $nullable: null) {
+  @if 'map' != _meta.type-of($type) {
+    @error invalid-type($type, $expected: 'map', $type: 'exact');
+  }
+  @return create-descriptor($type, $nullable, 'exact', $name);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                     VALIDATORS                                                     //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@function verify-primitive($assert, $descriptor, $path...) {
+  $name: _map.get($descriptor, name);
+  $type: _map.get($descriptor, type);
+  $nullable: _map.get($descriptor, nullable);
+
+  @if _meta.type-of($assert) != $type {
+    @if not $nullable or null != $assert {
+      @return invalid-type($assert, "#{$type}#{if($nullable, '', ' or null')}", $path);
+    }
+  }
+
+  @return null;
+}
+
+@function verify-list($assert, $descriptor, $path...) {
+  $name: _map.get($descriptor, name);
+  $type: _map.get($descriptor, type);
+  $expanded: _map.get($descriptor, expanded);
+  $nullable: _map.get($descriptor, nullable);
+
+  @if $expanded != _meta.type-of($assert) {
+    @if not $nullable or null != $assert {
+      @return invalid-type($assert, "#{$expanded}#{if($nullable, '', ' or null')}", $path);
+    }
+  }
+
+  @if null != $type and null != $assert {
+    $type: _map.merge($type, ($nullable: if(null != $nullable, $nullable, true)));
+
+    @each $value in $assert {
+      $error: verify($value, $type, $path...);
+      @if null != $error {
+        @return $error;
+      }
+    }
+  }
+
+  @return null;
+}
+
+@function verify-map($assert, $descriptor, $path...) {
+  $name: _map.get($descriptor, name);
+  $type: _map.get($descriptor, type);
+  $expanded: _map.get($descriptor, expanded);
+  $nullable: _map.get($descriptor, nullable);
+
+  @if $expanded != _meta.type-of($assert) {
+    @if not $nullable or null != $assert {
+      @return invalid-type($assert, "#{$expanded}#{if($nullable, '', ' or null')}", $path);
+    }
+  }
+
+  @if null != $type and null != $assert {
+    $type: _map.merge($type, ($nullable: if(null != $nullable, $nullable, true)));
+
+    @each $key, $value in $assert {
+      $error: verify($value, $type, $path...);
+      @if null != $error {
+        @return $error;
+      }
+    }
+  }
+
+  @return null;
+}
+
+@function verify-union($assert, $descriptor, $path...) {
+  $name: _map.get($descriptor, name);
+  $type: _map.get($descriptor, type);
+  $expanded: _map.get($descriptor, expanded);
+  $nullable: _map.get($descriptor, nullable);
+
+  @if $nullable and null == $assert {
+    @return null;
+  }
+
+  @each $t in $type {
+    @if null == verify($assert, $t, false) {
+      @return null;
+    }
+  }
+
+  $names: '';
+  @each $t in $type {
+    @if '' == $names {
+      $names: _map.get($t, name);
+    } @else {
+      $names: "#{$names}, #{_map.get($t, name)}";
+    }
+  }
+
+  @return invalid-type($assert, "one of #{$names}#{if($nullable, ' or null', '')}", $path);
+}
+
+@function verify-intersection($assert, $descriptor, $path...) {
+  $name: _map.get($descriptor, name);
+  $type: _map.get($descriptor, type);
+  $expanded: _map.get($descriptor, expanded);
+  $nullable: _map.get($descriptor, nullable);
+
+  @if $nullable and null == $assert {
+    @return null;
+  }
+
+  @each $t in $type {
+    $error: verify($assert, $t, $path...);
+    @if null != $error {
+      @return $error;
+    }
+  }
+
+  @return null;
+}
+
+@function verify-shape($assert, $descriptor, $path...) {
+  $name: _map.get($descriptor, name);
+  $type: _map.get($descriptor, type);
+  $expanded: _map.get($descriptor, expanded);
+  $nullable: _map.get($descriptor, nullable);
+
+  @if $nullable and null == $assert {
+    @return null;
+  }
+
+  @if 'map' != _meta.type-of($assert) {
+    @return invalid-type($assert, "#{$expanded}#{if($nullable, '', ' or null')}", $path);
+  }
+
+  @each $key, $value in $type {
+    $parts: _list.append($path, $key);
+    $error: verify(_map.get($assert, $key), $value, $parts...);
+    @if null != $error {
+      @return $error;
+    }
+  }
+
+  @if 'exact' == $expanded {
+    $keys: _map.keys($type);
+    @each $key, $value in $assert {
+      @if null == _list.index($keys, $key) {
+        @warn invalid-extra-key($assert, $key, $path);
+      }
+    }
+  }
+
+  @return null;
+}
+
+@function verify($assert, $descriptor, $path...) {
+  $error: check-descriptor($descriptor);
+  @if null != $error {
+    @return $error;
+  }
+
+  $expanded: _map.get($descriptor, expanded);
+  @if null == $expanded {
+    @if 'any' == _map.get($descriptor, type) {
+      @return null;
+    }
+    @return verify-primitive($assert, $descriptor, $path...);
+  }
+  @if 'list' == $expanded or 'arglist' == $expanded {
+    @return verify-list($assert, $descriptor, $path...);
+  }
+  @if 'map' == $expanded {
+    @return verify-map($assert, $descriptor, $path...);
+  }
+  @if 'union' == $expanded {
+    @return verify-union($assert, $descriptor, $path...);
+  }
+  @if 'intersection' == $expanded {
+    @return verify-intersection($assert, $descriptor, $path...);
+  }
+  @if 'shape' == $expanded or 'exact' == $expanded {
+    @return verify-shape($assert, $descriptor, $path...);
+  }
+  @return invalid-type($assert, _map.get($descriptor, name));
+}
+
+@function check($value, $descriptor) {
+  $error: verify($value, $descriptor);
+  @if null != $error {
+    @error $error;
+  }
+  @return null;
+}
+
+@mixin check($value, $descriptor) {
+  $e: check($value, $descriptor);
+}

@@ -30,6 +30,8 @@
     "strictNullChecks": true,
     "strict": true,
     "paths": {
+      "@nui-forms/*": ["src/forms/*"],
+      "@nui-themes/*": ["src/themes/*"],
       "@nui-tools/*": ["src/tools/*"],
       "@nui/*": ["src/components/*"]
     }

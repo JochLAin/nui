@@ -1,0 +1,15 @@
+@use "sass:list" as _list;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group list
+///
+/// Check if a list includes a key.
+/// @param {list} $list - The list.
+/// @param {any} $item - The item to check.
+/// @return {boolean} - True if the list includes the item, false otherwise.
+@function includes($list, $item) {
+  $e: type.check($list, type.list());
+
+  @return _list.index($list, $item) != null;
+}

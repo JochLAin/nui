@@ -1,0 +1,31 @@
+@use "@nui-tools/style/geometry" as *;
+
+:host {
+  ---nui-caret--offset: var(--nui-caret--offset, .55em);
+  ---nui-caret--size: var(--nui-caret--size, .55em);
+
+  display: inline-flex;
+  align-items: center;
+  align-self: stretch;
+  justify-content: center;
+  width: var(---nui-caret--offset);
+
+  &::before {
+    @include border-triangle-equilateral(left, var(---nui-caret--size));
+
+    display: inline-block;
+    width: 0;
+    height: 0;
+    box-sizing: border-box;
+    line-height: 1;
+    transform-origin: center;
+    transition: 150ms ease-in-out transform;
+    content: '';
+  }
+}
+
+:host([open]) {
+  &::before {
+    transform: rotate(90deg);
+  }
+}

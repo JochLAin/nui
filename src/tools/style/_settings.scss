@@ -1,0 +1,36 @@
+@use "./list";
+@use "./map";
+
+$prefix: "nui" !default;
+$prefix-class: $prefix !default;
+$prefix-component: $prefix !default;
+$prefix-data: $prefix !default;
+$prefix-prop: $prefix !default;
+
+$separator-block: '-' !default;
+$separator-element: '__' !default;
+$separator-modifier: '--' !default;
+$separator-prefix: '-' !default;
+$separator-query: '\\:' !default;
+
+$allow-typography: true !default;
+$use-class: true !default;
+$use-dictionary-as-default: false !default;
+$use-prop: true !default;
+$use-tag: true !default;
+$use-utility-important: false !default;
+
+$breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+) !default;
+
+$components: map.create() !default;
+$components-disabled: list.create() !default;
+$components-enabled: list.create() !default;
+$props: map.create() !default;
+$utilities: map.create() !default;

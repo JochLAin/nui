@@ -1,0 +1,31 @@
+@use "sass:meta" as _meta;
+@use "../list" as list;
+@use "./is-empty" as *;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group string
+///
+/// Join texts with a glue.
+/// @param {string} $glue - The glue.
+/// @param {arglist<string|list<string>>} $texts - The texts.
+/// @return {string} The joined texts.
+@function implode($glue: '', $texts...) {
+  $texts: list.flatten($texts);
+  @if _meta.type-of($glue) != 'string' {
+    @error 'The second argument must be a string';
+  }
+  @if _meta.type-of($texts) != 'list' and _meta.type-of($texts) != 'map' {
+    @error 'The first argument must be a list';
+  }
+
+  $result: "";
+  @each $item in $texts {
+    @if is-empty($result) {
+      $result: $item;
+    } @else {
+      $result: "#{$result}#{$glue}#{$item}";
+    }
+  }
+
+  @return if(is-empty($result), '', $result);
+}

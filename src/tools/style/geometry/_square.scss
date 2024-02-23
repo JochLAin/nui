@@ -1,0 +1,25 @@
+@function get-perpendicular-sides($side) {
+  @if $side == left or $side == right {
+    @return top bottom;
+  }
+  @if $side == top or $side == bottom {
+    @return left right;
+  }
+  @error "Undefined sides, expected top, left, bottom or right, got #{$side}";
+}
+
+@function get-opposite-side($side) {
+  @if $side == top {
+    @return bottom;
+  }
+  @if $side == left {
+    @return right;
+  }
+  @if $side == bottom {
+    @return top;
+  }
+  @if $side == right {
+    @return left;
+  }
+  @error "Undefined sides, expected top, left, bottom or right, got #{$side}";
+}

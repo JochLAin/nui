@@ -1,5 +1,5 @@
-import { element } from "@nui-tools/element";
-import styles from "!!raw-loader!sass-loader!./mark.scss";
+import { HTMLNuiElement, element } from "@nui-tools/decorators";
+import styles from "./mark.scss";
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -10,7 +10,7 @@ template.innerHTML = `
 `;
 
 @element('nui-list-mark')
-export class HTMLNuiListMarkElement extends HTMLElement {
+export class HTMLNuiListMarkElement extends HTMLNuiElement {
   #shadow: ShadowRoot;
 
   constructor() {

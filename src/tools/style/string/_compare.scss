@@ -1,0 +1,67 @@
+@use "sass:math" as _math;
+@use "sass:meta" as _meta;
+@use "sass:string" as _string;
+@use "sass:list" as _list;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group string
+///
+/// @prop {list<string>} $ascii-table-order - The default order of characters, ASCII table.
+$ascii-table-order:
+  "!" '"' "#" "$" "%" "&" "'" "(" ")" "*" "+" "," "-" "." "/"
+  "0" "1" "2" "3" "4" "5" "6" "7" "8" "9"
+  ":" ";" "<" "=" ">" "?" "@"
+  "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X" "Y" "Z"
+  "[" "\\" "]" "^" "_" "`"
+  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z"
+!default;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group string
+///
+/// Compare two strings, numbers or null by the ascii table.
+/// @param {number|string|null} $a - The first string.
+/// @param {number|string|null} $b - The second string.
+/// @param {list<string>|null} $order [$ascii-table-order] - The order of characters.
+/// @return {number} - Whether `$a` is less than `$b`.
+@function compare($left, $right, $order: null) {
+  $e: type.check($left, type.orX((type.number() type.string()), $nullable: true));
+  $e: type.check($right, type.orX((type.number() type.string()), $nullable: true));
+  $e: type.check($order, type.list(type.string(), $nullable: true));
+
+  @if $order == null {
+    $order: $ascii-table-order;
+  }
+
+  @if number == _meta.type-of($left) and number == _meta.type-of($right) {
+    $diff: $left - $right;
+    @return if(0 == $diff, 0, if(0 < $diff, -1, 1));
+  }
+
+  $left: if(null == $left, "", "#{$left}");
+  $right: if(null == $right, "", "#{$right}");
+
+  @if $left == $right {
+    @return 0;
+  }
+
+  @for $i from 1 through _math.min(_string.length($left), _string.length($right)) {
+    $left-char: _string.slice($left, $i, $i);
+    $right-char: _string.slice($right, $i, $i);
+
+    $left-idx: _list.index($order, $left-char);
+    $right-idx: _list.index($order, $right-char);
+
+    @if $left-idx != $right-idx {
+      @if $left-idx < $right-idx {
+        @return 1;
+      } @else {
+        @return -1;
+      }
+    }
+  }
+
+  $l: _string.length($left) - _string.length($right);
+  @return if(0 == $l, 0, if(0 < $l, 1, -1));
+}

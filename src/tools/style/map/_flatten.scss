@@ -1,0 +1,36 @@
+@use "sass:map" as _map;
+@use "../string" as string;
+@use "../type" as type;
+@use "./create" as *;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group map
+///
+/// Flatten a map.
+/// @param {map} $map - The map.
+/// @param {number} $depth - The depth to flatten.
+/// @param {string} $prefix - The prefix to add to each key.
+/// @param {string} $separator - The separator to use to concatenate the prefix and the key.
+/// @return {map} - The flatten map.
+@function flatten($map: (), $prefix: null, $separator: '-', $depth: -1) {
+  $e: type.check($map, type.map());
+  $e: type.check($depth, type.number());
+  $e: type.check($prefix, type.orX(type.string() type.number(), $nullable: true));
+  $e: type.check($separator, type.string());
+
+  @if type-of($map) != 'map' {
+    @return $map;
+  }
+
+  $result: create();
+  @each $key, $value in $map {
+    $key: string.prefix($key, $prefix, $separator);
+    @if type-of($value) == 'map' and $depth != 0 {
+      $result: _map.merge($result, flatten($value, $key, $separator, $depth - 1));
+    } @else {
+      $result: _map.merge($result, ($key: $value));
+    }
+  }
+
+  @return $result;
+}

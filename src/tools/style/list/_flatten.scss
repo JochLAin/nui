@@ -1,0 +1,27 @@
+@use "sass:meta" as _meta;
+@use "sass:list" as _list;
+@use "../type" as type;
+@use "./concat" as *;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group list
+///
+/// Flatten a list.
+/// @param {list} $list - The list to flatten.
+/// @param {number} $depth [-1] - The depth level to flatten.
+/// @return {list} - The flattened list.
+@function flatten($list, $depth: -1) {
+  $e: type.check($list, type.orX(type.list() type.args()));
+  $e: type.check($depth, type.number());
+
+  $result: ();
+  @each $value in $list {
+    @if _meta.type-of($value) == 'list' and $depth != 0 {
+      $result: concat($result, flatten($value, $depth - 1));
+    } @else {
+      $result: _list.append($result, $value);
+    }
+  }
+
+  @return $result;
+}

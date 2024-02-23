@@ -1,0 +1,21 @@
+@use "../settings" as *;
+@use "../map";
+@use "./flatten" as *;
+
+@function register(
+  $name, // string|map
+  $value: null, // string|map|null
+  $separator: $separator-prefix, // string
+  $abstract: false // boolean
+) {
+  $vars: flatten($name, $value, $separator);
+  $props: map.merge($props, $vars) !global;
+
+  //@if $abstract == false {
+  //  $dictionary-component: map.merge($dictionary-concrete, $vars) !global;
+  //} @else {
+  //  $dictionary-root: map.merge($dictionary-abstract, $vars) !global;
+  //}
+
+  @return $vars;
+}

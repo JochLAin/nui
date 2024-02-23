@@ -1,0 +1,16 @@
+@use "sass:list" as _list;
+@use "sass:map" as _map;
+@use "sass:meta" as _meta;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group map
+///
+/// Returns whether `$map` is empty.
+/// @param {map} $map - The map.
+/// @return {boolean} - Whether `$map` is empty.
+@function is-empty($map: ()) {
+  $e: type.check($map, type.map());
+
+  @return 0 == _list.length(_map.keys($map));
+}

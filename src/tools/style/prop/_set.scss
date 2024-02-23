@@ -1,0 +1,30 @@
+@use "../settings" as *;
+@use "../string";
+@use "./flatten" as *;
+@use "./get-value" as *;
+
+@mixin set(
+  $name, // string|map
+  $value: null, // string|map|null
+  $separator: $separator-prefix, // string
+  $prefix-prop: $prefix-prop, // string
+  $use-prop: $use-prop, // boolean
+) {
+  $vars: flatten($name, $value, $separator);
+
+  @each $key, $value in $vars {
+    //@if not $value and $use-prop {
+    //  $value: get-value($name);
+    //}
+
+    @if $value {
+      @if type-of($name) == 'string' and string.is-private($name) {
+        $name: "-#{string.prefix(string.slice($name, 2), $prefix-prop, $separator)}";
+      } @else {
+        $name: string.prefix($name, $prefix-prop, $separator);
+      }
+
+      --#{$name}: #{$value};
+    }
+  }
+}

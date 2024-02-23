@@ -1,0 +1,38 @@
+@use "sass:list" as _list;
+@use "sass:math" as _math;
+@use "../string/compare" as string;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group list
+///
+/// Sort a list.
+/// @param {list} $list - The list.
+/// @param {list} $order [null] - A list representing character order to sort.
+/// @return {list} - The sorted list.
+@function sort($list, $order: null) {
+  $e: type.check($list, type.list());
+  $e: type.check($order, type.list(type.string(), $nullable: true));
+
+  $less: ();
+  $equal: ();
+  $large: ();
+
+  @if _list.length($list) > 1 {
+    $seed: _list.nth($list, _math.ceil(_math.div(_list.length($list), 2)));
+
+    @each $item in $list {
+      @if $item != $seed {
+        @if 0 < string.compare($item, $seed, $order) {
+          $less: _list.append($less, $item, _list.separator($list));
+        } @else if 0 > string.compare($item, $seed, $order) {
+          $large: _list.append($large, $item, _list.separator($list));
+        }
+      }
+    }
+
+    @return _list.join(_list.append(sort($less, $order), $seed), sort($large, $order));
+  }
+
+  @return $list;
+}

@@ -1,0 +1,7 @@
+@use "../settings" as *;
+@use "../map";
+
+@function breakpoint-max($name, $breakpoints: $breakpoints) {
+  $max: map.get($breakpoints, $name);
+  @return if($max and $max > 0, $max - .02, null);
+}

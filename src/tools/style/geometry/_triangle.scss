@@ -1,0 +1,19 @@
+@forward "../math";
+@use "./square" as *;
+
+@function equilateral-height($size) {
+  @return calc($size * var(--sqrt-3) / 2);
+}
+
+@mixin border-triangle-equilateral($side: 'left', $size) {
+  $height: equilateral-height($size);
+
+  border-style: solid;
+  border-color: transparent;
+  border-#{$side}-color: currentColor;
+  border-#{$side}-width: $height;
+  border-#{get-opposite-side($side)}-width: calc($size - $height);
+  @each $perpendicular in get-perpendicular-sides($side) {
+    border-#{$perpendicular}-width: calc($size / 2);
+  }
+}

@@ -1,0 +1,36 @@
+@use "sass:list" as _list;
+@use "sass:math" as _math;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group list
+///
+/// Get a slice of a list.
+/// @param {list} $list - The list.
+/// @param {number} $start [0] - The start index of the slice.
+/// @param {number} $end [length($list)] - The end index of the slice.
+/// @return {list} - The slice of the list.
+@function slice($list, $start: 0, $end: _list.length($list)) {
+  $e: type.check($list, type.list());
+  $e: type.check($start, type.number());
+  $e: type.check($end, type.number());
+
+  @if $start < 0 {
+    $start: _list.length($list) + $start;
+  }
+  @if $end < 0 {
+    $end: _list.length($list) + $end;
+  }
+
+  $start: _math.max(0, _math.min(_list.length($list), $start));
+  $end: _math.max(0, _math.min(_list.length($list), $end));
+
+  $result: ();
+  @for $idx from 0 through _list.length($list) - 1 {
+    @if $idx >= $start and $idx < $end {
+      $result: _list.append($result, _list.nth($list, $idx + 1));
+    }
+  }
+
+  @return $result;
+}

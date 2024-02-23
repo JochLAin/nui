@@ -1,0 +1,16 @@
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group prop
+///
+/// Declare one or many CSS variable.
+/// @param {string|map} $name - The name of the variable or a map of variables.
+/// @param {string|map|null} $value - The value of the variable or a map of variables.
+/// @param {string} $separator - The separator to use to flatten the map.
+@function extends($defaultValue: null, $proxies...) {
+
+}
+
+@mixin extends($name, $defaultValue: null, $proxies...) {
+  :root, :host {
+    #{$name}: extends($defaultValue, $proxies...);
+  }
+}

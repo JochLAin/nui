@@ -1,14 +1,9 @@
-declare module '!!raw-loader!sass-loader!*.scss' {
-  const content: string;
+declare module '*.scss' {
+  const content: any;
   export default content;
 }
 
-declare module '!!raw-loader!*.html' {
-  const content: string;
-  export default content;
-}
-
-declare module '!!raw-loader!*.md' {
-  const content: string;
+declare module '*.md' {
+  const content: any;
   export default content;
 }

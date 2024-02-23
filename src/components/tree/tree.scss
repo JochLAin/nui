@@ -1,0 +1,19 @@
+:host {
+  ---nui-tree-branch--content-offset: var(--nui-tree--children-offset, var(--nui-branch--content-offset, var(--nui-collapse--default-toggle-offset)));
+  ---nui-tree-branch--toggle-offset: var(--nui-tree--label-offset, var(--nui-branch--toggle-offset, var(--nui-collapse--default-toggle-offset)));
+  ---nui-tree-leaf--content-offset: var(--nui-tree--label-offset, var(--nui-leaf--content-offset, var(--nui-collapse--default-toggle-offset)));
+}
+
+nui-leaf {
+  --nui-leaf--content-offset: var(---nui-tree-leaf--content-offset);
+}
+
+nui-branch {
+  --nui-branch--content-offset: var(---nui-tree-branch--content-offset);
+  --nui-branch--toggle-offset: var(---nui-tree-branch--toggle-offset);
+}
+
+nui-leaf + nui-branch,
+nui-branch + nui-leaf {
+  display: none;
+}

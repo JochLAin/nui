@@ -1,0 +1,8 @@
+:host {
+  ---nui-leaf--content-offset: var(--nui-leaf--content-offset, 1.25em);
+  display: block;
+}
+
+:host::part(content) {
+  padding-left: var(---nui-leaf--content-offset);
+}

@@ -1,0 +1,21 @@
+@use "sass:list" as _list;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group list
+///
+/// Concatenate lists.
+/// @param {arglist<list>} $args - The lists to concatenate.
+/// @return {list} - The concatenated list.
+@function concat($args...) {
+  $e: type.check($args, type.args(type.list()));
+
+  $result: ();
+  @each $list in $args {
+    @each $value in $list {
+      $result: _list.append($result, $value);
+    }
+  }
+
+  @return $result;
+}

@@ -1,0 +1,13 @@
+@use "../settings" as *;
+@use "./breakpoint-max" as *;
+
+@mixin breakpoint-down($name, $breakpoints: $breakpoints) {
+  $max: breakpoint-max($name, $breakpoints);
+  @if $max {
+    @media (max-width: $max) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}

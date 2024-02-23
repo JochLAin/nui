@@ -1,0 +1,23 @@
+@use "../settings" as *;
+@use "../map";
+@use "../type";
+@use "./flatten" as *;
+@use "./set" as *;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group prop
+///
+/// Declare one or many CSS variable.
+/// @param {string|map} $name - The name of the variable or a map of variables.
+/// @param {string|map|null} $value - The value of the variable or a map of variables.
+/// @param {string} $separator - The separator to use to flatten the map.
+@mixin declare($name, $value, $separator: $separator-prefix) {
+  $e: type.check($name, type.orX(type.string() type.map()));
+  $e: type.check($value, type.orX((type.string() type.map()), $nullable: true));
+  $e: type.check($separator, type.string());
+  $vars: flatten($name, $value, $separator);
+
+  :root, :host {
+    @include set(map.sort($vars));
+  }
+}

@@ -1,0 +1,22 @@
+@use "sass:meta" as _meta;
+@use "sass:string" as _string;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group string
+///
+/// Returns whether `$text` is private.
+/// @param {number|string|null} $text - The text.
+/// @return {boolean} `true` if `$text` is private, `false` otherwise.
+@function is-private($text) {
+  $e: type.check($text, type.orX((type.number() type.string()), $nullable: true));
+  @if null == $text {
+    @return false;
+  }
+  @if number == _meta.type-of($text) {
+    // Yes, -1 is private
+    $text: "#{$text}";
+  }
+
+  @return _string.slice($text, 0, 1) == '-';
+}

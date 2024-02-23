@@ -1,0 +1,19 @@
+@use "sass:list" as _list;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group list
+///
+/// Reverse a list.
+/// @param {list} $list - The list.
+/// @return {list} - The reversed list.
+@function reverse($list) {
+  $e: type.check($list, type.list());
+
+  $result: ();
+  @for $idx from _list.length($list) through 1 {
+    $result: _list.append($result, _list.nth($list, $idx));
+  }
+
+  @return $result;
+}

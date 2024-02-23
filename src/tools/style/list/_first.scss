@@ -1,0 +1,14 @@
+@use "sass:list" as _list;
+@use "../type" as type;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group list
+///
+/// Get the first item of a list.
+/// @param {list} $list - The list.
+/// @return {any} - The first item of the list.
+@function first($list) {
+  $e: type.check($list, type.list());
+
+  @return _list.nth($list, 1);
+}

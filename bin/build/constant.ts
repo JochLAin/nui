@@ -5,8 +5,10 @@ export const PACKAGE_DIR = `${PROJECT_DIR}/src`;
 
 export const MODULES = {
   '@nui': path.resolve(PACKAGE_DIR, 'components'),
+  '@nui-forms': path.resolve(PACKAGE_DIR, 'forms'),
+  '@nui-themes': path.resolve(PACKAGE_DIR, 'themes'),
   '@nui-tools': path.resolve(PACKAGE_DIR, 'tools'),
-}
+};
 
 export const PACKAGE = {
   "name": "@nui-tools/decorators",

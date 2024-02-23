@@ -1,0 +1,23 @@
+@use "sass:map" as _map;
+@use "sass:meta" as _meta;
+@use "../type" as type;
+@use "./create" as *;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group map
+///
+/// Merges multiple maps into a single map.
+/// @param {arglist<map>} $maps - The maps to merge.
+/// @return {map} - The merged map.
+@function assign(
+  $maps...
+) {
+  $e: type.check($maps, type.args(type.map()));
+
+  $result: create();
+  @each $map in $maps {
+    $result: _map.merge($result, $map);
+  }
+
+  @return $result;
+}

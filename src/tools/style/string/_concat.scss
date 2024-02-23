@@ -1,0 +1,30 @@
+@use "sass:math" as _math;
+@use "sass:list" as _list;
+@use "../type" as type;
+@use "./is-empty" as *;
+@use "./implode" as *;
+
+/// @author Jocelyn Faihy <jochlain@gmail.com>
+/// @group string
+///
+/// Concatenate strings.
+/// @param {arglist<string|null>} $args - The list of strings to concatenate with their separator. <base> <separator> <value> <separator> <value> <separator> <value>...
+/// @return {string} - The concatenated string.
+@function concat($args...) {
+  $e: type.check($args, type.args(type.string($nullable: true)));
+
+  $result: "#{_list.nth($args, 1)}";
+  @for $i from 1 through _math.floor(_math.div(_list.length($args), 2)) {
+    $value: _list.nth($args, $i * 2 + 1);
+    $separator: _list.nth($args, $i * 2);
+    @if null == $separator {
+      $separator: '';
+    }
+
+    @if not is-empty($value) {
+      $result: implode($separator, $result, $value);
+    }
+  }
+
+  @return $result;
+}

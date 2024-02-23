@@ -11,10 +11,24 @@ module.exports = {
   },
   module: {
     rules: [{
-      test: /\.([em]?[jt]sx?)$/,
-      use: 'ts-loader',
+      test: /\.md$/,
+      loader: 'raw-loader'
     }, {
       test: /\.s[ac]ss$/i,
+      include: [path.resolve(__dirname, 'src')],
+      use: [
+        "raw-loader",
+        {
+          loader: "sass-loader",
+          options: {
+            implementation: require('sass'),
+            sassOptions: { outputStyle: 'compressed' },
+          }
+        },
+      ],
+    }, {
+      test: /\.s[ac]ss$/i,
+      exclude: [path.resolve(__dirname, 'src')],
       use: [
         "style-loader",
         "css-loader",
@@ -23,12 +37,18 @@ module.exports = {
     }, {
       test: /\.svg$/,
       loader: 'url-loader'
+    }, {
+      test: /\.([em]?[jt]sx?)$/,
+      use: 'ts-loader',
     }],
   },
   devtool: 'eval-source-map',
   devServer: {
     allowedHosts: 'all',
-    client: { webSocketURL: `ws://127.0.0.1:${process.env.PORT_WEBPACK || 36902}/ws`, },
+    client: {
+      progress: false,
+      webSocketURL: `ws://127.0.0.1:${process.env.PORT_WEBPACK || 36902}/ws`,
+    },
     compress: true,
     host: '0.0.0.0',
     port: process.env.PORT_WEBPACK,
@@ -36,8 +56,10 @@ module.exports = {
     liveReload: true,
   },
   resolve: {
-    extensions: ['.js', '.ts', '.json', '.html', '.wasm'],
+    extensions: ['.js', '.ts', '.json', '.html', '.md', '.wasm'],
     alias: {
+      '@nui-forms': path.resolve(__dirname, 'src/forms'),
+      '@nui-themes': path.resolve(__dirname, 'src/themes'),
       '@nui-tools': path.resolve(__dirname, 'src/tools'),
       '@nui': path.resolve(__dirname, 'src/components'),
     },
