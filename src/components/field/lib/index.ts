@@ -26,14 +26,12 @@ function setupInput(input: HTMLNuiInputElement, target?: HTMLNuiFieldElement) {
 }
 
 function createInputNumber(target?: HTMLNuiFieldElement) {
-  console.log(HTMLNuiInputNumberElement.tag);
   const input = document.createElement(HTMLNuiInputNumberElement.tag!) as HTMLNuiInputNumberElement;
   customElements.upgrade(input);
   return setupInput(input, target);
 }
 
 function createInputText(target?: HTMLNuiFieldElement) {
-  console.log(HTMLNuiInputTextElement.tag);
   const input = document.createElement(HTMLNuiInputTextElement.tag!) as HTMLNuiInputTextElement;
   customElements.upgrade(input);
   return setupInput(input, target);
@@ -47,10 +45,10 @@ function getType(type: string|null): keyof typeof FieldTags {
 }
 
 @field()
-@element('nui-field', { parts: ['field', 'input', 'textarea', 'select'] })
+@element('nui-field', { parts: ['field', 'input', 'select', 'textarea'] })
 export class HTMLNuiFieldElement extends HTMLNuiField {
   public readonly shadowRoot!: ShadowRoot;
-  #field: HTMLNuiFieldType;
+  #field!: HTMLNuiFieldType;
 
   @attribute()
   public set type(value: string|null) {
@@ -65,13 +63,7 @@ export class HTMLNuiFieldElement extends HTMLNuiField {
 
   public constructor() {
     super();
-    this.#field = createInputText(this);
     this.attachShadowFragment();
-    this.shadowRoot.append(this.#field);
-    this.attachField(this.#field);
-  }
-
-  initializedCallback() {
     this.#setField(getType(this.type));
   }
 
@@ -83,7 +75,7 @@ export class HTMLNuiFieldElement extends HTMLNuiField {
   }
 
   #setField(type: keyof typeof FieldTags) {
-    if ((this.#field.constructor as ElementConstructor).tag === FieldTags[type]) {
+    if (this.#field && (this.#field.constructor as ElementConstructor).tag === FieldTags[type]) {
       return;
     }
 

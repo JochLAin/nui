@@ -22,9 +22,10 @@ export class HTMLNuiInputTextElement extends HTMLNuiField {
   }
 
   public initializedCallback = () => {
-    this.#field.addEventListener('keyup', () => {
+    this.#field.addEventListener('change', (evt) => {
       if (!this.#field.value) this.value = null;
       else this.value = this.#field.value;
+      this.dispatchEvent(new Event(evt.type, evt));
     });
   }
 }
