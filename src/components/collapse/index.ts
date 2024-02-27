@@ -1,10 +1,9 @@
+import { HTMLNuiElement, attribute, element } from "@nui-tools";
 import { HTMLNuiCaretElement } from "@nui/caret";
-import { HTMLNuiElement, element, property } from "@nui-tools/decorators";
-import { createTemplate } from "@nui-tools/helpers";
 import styles from "./index.scss";
 
-const TEMPLATE = createTemplate(`
-<style>${styles}</style>
+const parts = ['details wrapper', 'summary toggle label', 'container', 'content'];
+const template = `
 <details part="details wrapper">
   <summary part="summary toggle label">
     <slot name="toggle"></slot>
@@ -17,29 +16,25 @@ const TEMPLATE = createTemplate(`
     </div>
   </div>
 </details>
-`);
+`;
 
-@element('nui-collapse')
+@element('nui-collapse', { parts, template, styles })
 export class HTMLNuiCollapseElement extends HTMLNuiElement {
   readonly shadowRoot!: ShadowRoot;
   #container: HTMLDivElement;
   #details: HTMLDetailsElement;
   #summary: HTMLElement;
 
-  @property()
+  @attribute()
   set open(value: boolean|null) {
     this.#details.open = !!value || false;
 
-    const caret = this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="toggle"]')!.assignedNodes({ flatten: true }).find((node) => node instanceof HTMLNuiCaretElement);
-    if (caret instanceof HTMLNuiCaretElement) {
-      caret.open = this.#details.open;
-    }
+    const caret = this.shadowSlotQuerySelector<HTMLNuiCaretElement>('slot[name="toggle"]', 'nui-caret', { flatten: true });
+    if (caret) caret.open = this.#details.open;
   }
 
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(TEMPLATE.content.cloneNode(true));
     this.#details = this.shadowRoot.querySelector('details')!;
     this.#summary = this.shadowRoot.querySelector('summary')!;
     this.#container = this.shadowRoot.querySelector('.container')!;

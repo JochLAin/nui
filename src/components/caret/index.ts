@@ -1,21 +1,12 @@
-import { HTMLNuiElement, element, property } from "@nui-tools/decorators";
-import { createTemplate } from "@nui-tools/helpers";
+import { HTMLNuiElement, element, attribute } from "@nui-tools";
 import styles from "./index.scss";
 
-const TEMPLATE = createTemplate(`
-<style>${styles}</style>
-`);
+const template = ``;
 
-@element('nui-caret')
+@element('nui-caret', { template, styles })
 export class HTMLNuiCaretElement extends HTMLNuiElement {
   readonly shadowRoot!: ShadowRoot;
 
-  @property()
+  @attribute()
   open: boolean|null = null;
-
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(TEMPLATE.content.cloneNode(true));
-  }
 }

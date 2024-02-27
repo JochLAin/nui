@@ -1,9 +1,7 @@
-import { HTMLNuiElement, element, property } from "@nui-tools/decorators";
-import { createTemplate } from "@nui-tools/helpers";
+import { HTMLNuiElement, attribute, element } from "@nui-tools";
 import styles from "./index.scss";
 
-const TEMPLATE = createTemplate(`
-<style>${styles}</style>
+const template = `
 <dialog part="dialog">
     <slot name="close">
       <button type="button" part="close">&times;</button>
@@ -12,14 +10,14 @@ const TEMPLATE = createTemplate(`
         <slot></slot>
     </div>
 </dialog>
-`);
+`;
 
-@element('nui-popin')
+@element('nui-popin', { parts: ['close', 'content', 'dialog'], template, styles })
 export class HTMLNuiPopinElement extends HTMLNuiElement {
   readonly shadowRoot!: ShadowRoot;
   readonly #dialog: HTMLDialogElement;
 
-  @property()
+  @attribute()
   set open(value: boolean|null) {
     if (value) {
       this.#dialog.showModal();
@@ -30,8 +28,6 @@ export class HTMLNuiPopinElement extends HTMLNuiElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.append(TEMPLATE.content.cloneNode(true));
     this.#dialog = this.shadowRoot.querySelector<HTMLDialogElement>('dialog[part~="dialog"]')!;
   }
 

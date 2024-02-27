@@ -1,42 +1,7 @@
-:root {
-  --nui-collapse--default-toggle-offset: .875em;
-}
+@import "./stylesheets/form/text";
+@import "./stylesheets/tree";
 
 body {
-  //background: #333;
-  //color: #FFF;
-}
-
-nui-tree {
-  &::part(branch) {
-    color: Sienna;
-  }
-  &::part(leaf) {
-    color: Green;
-  }
-  &::part(root) {
-    color: DarkSlateGray;
-  }
-}
-
-.nui-tree--file--toggle,
-.nui-tree--file {
-  nui-tree:not([open]) > .fa-folder-open,
-  nui-tree[open] > .fa-folder {
-    display: none;
-  }
-}
-
-.nui-tree--file--toggle {
-  --nui-tree--children-offset: 1.25em;
-  --nui-tree--label-offset: var(--nui-collapse--default-toggle-offset);
-}
-
-.nui-tree--file nui-tree {
-  --nui-tree--children-offset: 1.25em;
-  --nui-tree--label-offset: 0;
-
-  &::part(toggle)::marker {
-    content: none;
-  }
+  background: #333;
+  color: #FFF;
 }

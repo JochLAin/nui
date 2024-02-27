@@ -1,0 +1,8 @@
+nui-input {
+  &::part(container) {
+    display: flex;
+    flex-direction: column;
+    gap: .5em;
+    margin-bottom: .5rem;
+  }
+}

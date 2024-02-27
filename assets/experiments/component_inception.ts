@@ -1,39 +1,17 @@
-import { element, HTMLNuiElement } from "@nui-tools/decorators";
-import { createTemplate } from "@nui-tools/helpers";
+import { element, HTMLNuiElement } from "@nui-tools";
 
 const main = document.body.querySelector('main')!;
 
-@element('nui-child')
+@element('nui-child', { template: `<slot></slot>` })
 class HTMLNuiChildElement extends HTMLNuiElement {
-  static template = createTemplate(`<slot></slot>`);
-
-  constructor() {
-    super();
-    const children = HTMLNuiChildElement.template.content.cloneNode(true);
-    this.attachShadow({ mode: 'open' }).appendChild(children);
-  }
 }
 
-@element('nui-parent')
+@element('nui-parent', { template: `<nui-child><slot></slot></nui-child>` })
 class HTMLNuiParentElement extends HTMLNuiElement {
-  static template = createTemplate(`<nui-child><slot></slot></nui-child>`);
-
-  constructor() {
-    super();
-    const children = HTMLNuiParentElement.template.content.cloneNode(true);
-    this.attachShadow({ mode: 'open' }).appendChild(children);
-  }
 }
 
-@element('nui-root')
+@element('nui-root', { template: `<nui-parent><slot></slot></nui-parent>` })
 class HTMLNuiRootElement extends HTMLNuiElement {
-  static template = createTemplate(`<nui-parent><slot></slot></nui-parent>`);
-
-  constructor() {
-    super();
-    const children = HTMLNuiRootElement.template.content.cloneNode(true);
-    this.attachShadow({ mode: 'open' }).appendChild(children);
-  }
 }
 
 main.innerHTML = `<nui-root>Hello world</nui-root>`;

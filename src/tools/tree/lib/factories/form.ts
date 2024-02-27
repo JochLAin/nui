@@ -11,8 +11,8 @@ const isFormInputType = (input: any): input is FormInputType => {
 };
 
 export default (element: HTMLElement) => {
-    const elements = Array.from(element.querySelectorAll('forms, input, select, textarea'));
-    if (element.matches('forms, input, select, textarea')) elements.push(element);
+    const elements = Array.from(element.querySelectorAll('forms, field, select, textarea'));
+    if (element.matches('forms, field, select, textarea')) elements.push(element);
 
     const nodes = elements.map((input: Element): FormOutputType => {
         if (!isFormInputType(input)) throw new Error(`Invalid <form|input|select|textarea> got ${input.tagName.toLowerCase()}`);

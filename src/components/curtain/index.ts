@@ -1,9 +1,8 @@
-import { HTMLNuiElement, element, property } from "@nui-tools/decorators";
-import { createTemplate } from "@nui-tools/helpers";
+import { HTMLNuiElement, attribute, element } from "@nui-tools";
 import styles from "./index.scss";
 
-const TEMPLATE = createTemplate(`
-<style>${styles}</style>
+const parts = ['dialog', 'close', 'content'];
+const template = `
 <dialog part="dialog">
   <slot name="close">
     <button type="button" part="close">&times;</button>
@@ -12,14 +11,17 @@ const TEMPLATE = createTemplate(`
     <slot></slot>
   </div>
 </dialog>
-`);
+`;
 
-@element('nui-curtain')
+@element('nui-curtain', { parts, template, styles })
 export class HTMLNuiCurtainElement extends HTMLNuiElement {
   readonly shadowRoot!: ShadowRoot;
   readonly #dialog: HTMLDialogElement;
 
-  @property()
+  @attribute((value) => value === 'right' ? value : 'left')
+  side!: 'left'|'right';
+
+  @attribute()
   set open(value: boolean|null) {
     if (value) {
       this.#dialog.showModal();
@@ -28,15 +30,8 @@ export class HTMLNuiCurtainElement extends HTMLNuiElement {
     }
   }
 
-  @property()
-  get side() {
-    return this.getAttribute('side') || 'left';
-  }
-
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.append(TEMPLATE.content.cloneNode(true));
     this.#dialog = this.shadowRoot.querySelector<HTMLDialogElement>('dialog[part~="dialog"]')!;
   }
 

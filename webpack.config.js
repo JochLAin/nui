@@ -58,7 +58,6 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.ts', '.json', '.html', '.md', '.wasm'],
     alias: {
-      '@nui-forms': path.resolve(__dirname, 'src/forms'),
       '@nui-themes': path.resolve(__dirname, 'src/themes'),
       '@nui-tools': path.resolve(__dirname, 'src/tools'),
       '@nui': path.resolve(__dirname, 'src/components'),

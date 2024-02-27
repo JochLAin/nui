@@ -1,4 +1,4 @@
-import Relation from "../../models/relation";
+import Relation from "../../model/relation";
 
 test('Test single relation', () => {
     const relation = new Relation([[1, 2]]);

@@ -1,10 +1,9 @@
-import { HTMLNuiElement, element, property } from "@nui-tools/decorators";
-import { createTemplate } from "@nui-tools/helpers";
+import { HTMLNuiElement, attribute, element } from "@nui-tools";
 import _ from "@nui-tools/i18n";
 import styles from "./index.scss";
 
-const TEMPLATE = createTemplate(`
-<style>${styles}</style>
+const parts = ['dialog', 'content', 'actions', 'cancel', 'valid'];
+const template = `
 <dialog part="dialog">
     <div class="content" part="content">
         <slot name="message">
@@ -20,14 +19,14 @@ const TEMPLATE = createTemplate(`
         </footer>
     </div>
 </dialog>
-`);
+`;
 
-@element('nui-confirm')
+@element('nui-confirm', { parts, template, styles })
 export class HTMLNuiConfirmElement extends HTMLNuiElement {
   readonly shadowRoot!: ShadowRoot;
   readonly #dialog: HTMLDialogElement;
 
-  @property()
+  @attribute()
   set open(value: boolean|null) {
     if (value) {
       this.#dialog.showModal();
@@ -38,8 +37,6 @@ export class HTMLNuiConfirmElement extends HTMLNuiElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.append(TEMPLATE.content.cloneNode(true));
     this.#dialog = this.shadowRoot.querySelector<HTMLDialogElement>('dialog[part~="dialog"]')!;
   }
 

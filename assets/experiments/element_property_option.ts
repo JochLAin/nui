@@ -1,11 +1,10 @@
-import { HTMLNuiElement, ElementOpts, element } from "@nui-tools/decorators";
-import { createTemplate } from "@nui-tools/helpers";
+import { HTMLNuiElement, ElementOpts, element } from "@nui-tools";
 
 const opts: ElementOpts = {
   properties: {
     label: {
-      set(element, value: string|null) {
-        console.log(element, value);
+      listen(value: string|null) {
+        console.log(this, value);
       }
     }
   }

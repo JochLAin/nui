@@ -1,24 +1,22 @@
+import { HTMLNuiElement, attribute, element } from "@nui-tools";
 import { HTMLNuiCollapseElement } from "@nui/collapse";
-import { HTMLNuiElement, element, property } from "@nui-tools/decorators";
-import { createTemplate } from "@nui-tools/helpers";
 import styles from "./branch.scss";
 
-const TEMPLATE = createTemplate(`
-<style>${styles}</style>
-<nui-collapse exportparts="caret:caret, toggle:toggle, content:content, details:details">
+const template = `
+<nui-collapse exportparts="toggle:toggle, content:content, details:details">
   <slot name="toggle" slot="toggle">
     <slot></slot>
   </slot>
   <slot name="content" slot="content"></slot>
 </nui-collapse>
-`);
+`;
 
-@element('nui-branch')
+@element('nui-branch', { parts: ['content', 'details', 'toggle'], template, styles })
 export class HTMLNuiBranchElement extends HTMLNuiElement {
   readonly shadowRoot!: ShadowRoot;
-  #collapse!: HTMLNuiCollapseElement;
+  readonly #collapse: HTMLNuiCollapseElement;
 
-  @property()
+  @attribute()
   set open(value: boolean|null) {
     if (!this.#collapse) return;
     this.#collapse.open = value;
@@ -27,8 +25,6 @@ export class HTMLNuiBranchElement extends HTMLNuiElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.append(TEMPLATE.content.cloneNode(true));
     this.#collapse = this.shadowRoot.querySelector('nui-collapse')!;
     customElements.upgrade(this.#collapse);
   }

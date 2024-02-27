@@ -1,20 +1,15 @@
-import { HTMLNuiElement, element } from "@nui-tools/decorators";
-import { createTemplate } from "@nui-tools/helpers";
+import { HTMLNuiElement, element } from "@nui-tools";
 
 const main = document.body.querySelector('main')!;
 
-@element('nui-debug')
+@element('nui-debug', { template: `<div><slot></slot></div><aside><slot></slot></aside>` })
 class HTMLNuiDebugElement extends HTMLNuiElement {
-  static template = createTemplate(`<div><slot></slot></div><aside><slot></slot></aside>`);
   shadowRoot!: ShadowRoot;
 
   constructor() {
     super();
-    const children = HTMLNuiDebugElement.template.content.cloneNode(true);
-    this.attachShadow({ mode: 'open' }).appendChild(children);
     const div = this.shadowRoot.querySelector('div')!;
     const aside = this.shadowRoot.querySelector('aside')!;
-
     this.shadowRoot.insertBefore(aside, div);
   }
 }

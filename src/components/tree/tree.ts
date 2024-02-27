@@ -1,10 +1,9 @@
-import { HTMLNuiElement, element, property } from "@nui-tools/decorators";
-import { createTemplate } from "@nui-tools/helpers";
+import { HTMLNuiElement, attribute, element } from "@nui-tools";
 import { HTMLNuiBranchElement } from "./branch";
 import { HTMLNuiLeafElement } from "./leaf";
 import styles from "./tree.scss";
 
-const TEMPLATE = createTemplate(`
+const template = `
 <style>${styles}</style>
 <nui-leaf exportparts="content:label, content:leaf">
     <slot></slot>
@@ -15,25 +14,25 @@ const TEMPLATE = createTemplate(`
   </slot>
   <slot name="branch" slot="content"></slot>
 </nui-branch>
-`);
+`;
 
-@element('nui-tree', styles)
+@element('nui-tree', { template, styles })
 export class HTMLNuiTreeElement extends HTMLNuiElement {
   readonly shadowRoot!: ShadowRoot;
-  readonly #branch!: HTMLNuiBranchElement;
-  readonly #leaf!: HTMLNuiLeafElement;
+  readonly #branch: HTMLNuiBranchElement;
+  readonly #leaf: HTMLNuiLeafElement;
 
   #children: HTMLNuiTreeElement[] = [];
   #parent: HTMLNuiTreeElement|null = null;
   #root!: HTMLNuiTreeElement;
 
-  @property()
+  @attribute()
   shallow!: boolean|null;
 
-  @property()
+  @attribute()
   type!: string|null;
 
-  @property()
+  @attribute()
   set open(value: boolean|null) {
     this.#branch.open = value;
     this.dispatchEvent(new Event('nui-tree::toggle'));
@@ -41,8 +40,6 @@ export class HTMLNuiTreeElement extends HTMLNuiElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.append(TEMPLATE.content.cloneNode(true));
     this.#leaf = this.shadowRoot.querySelector('nui-leaf')!;
     customElements.upgrade(this.#leaf);
     this.#branch = this.shadowRoot.querySelector('nui-branch')!;

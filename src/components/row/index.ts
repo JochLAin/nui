@@ -1,17 +1,10 @@
-import { HTMLNuiElement, element } from "@nui-tools/decorators";
+import { HTMLNuiElement, element } from "@nui-tools";
 import styles from "./index.scss";
 
-const template = document.createElement('template');
-template.innerHTML = `
-<style>${styles}</style>
+const template = `
 <slot></slot>
 `;
 
-@element('nui-row')
+@element('nui-row', { template, styles })
 export class HTMLNuiRowElement extends HTMLNuiElement {
-  constructor() {
-    super();
-    const shadow = this.attachShadow({ mode: 'open' });
-    shadow.appendChild(template.content.cloneNode(true));
-  }
 }
