@@ -106,18 +106,18 @@ export function callParentLifeCycle<
 }
 
 export function element<T extends typeof HTMLElement = typeof HTMLElement>(tag?: string, opts?: ElementOpts<InstanceType<T>>): ClassDecorator<T> {
-  return function <E extends T>(targetClass: E) {
+  return function <C extends T>(targetClass: C) {
     if (tag && typeof window !== 'undefined') {
       const element = customElements.get(tag);
-      if (element?.prototype instanceof targetClass) return element as E;
+      if (element?.prototype instanceof targetClass) return element as C;
       if (element) throw new Error(`The element ${tag} is already defined as a different class.`);
     }
 
-    const template = opts?.template?.trim().replace(/>[\s]+</g, '><');
+    const template = opts?.template?.trim().replace(/>\s+</g, '><');
     const styles = opts?.styles?.trim();
 
     // @ts-ignore mixin classes constructor arguments tuple not work with ConstructorParameters<Constructor>
-    class Mixin extends targetClass implements ElementInterface {
+    class MixinElement extends targetClass implements ElementInterface {
       public static readonly observedAttributes: string[] = buildObservedAttributes(targetClass);
       public static readonly parts = buildParts(targetClass, opts?.parts);
       public static readonly propertyAttributes = buildPropertyAttributes(targetClass);
@@ -183,7 +183,7 @@ export function element<T extends typeof HTMLElement = typeof HTMLElement>(tag?:
       }
 
       protected attachShadowFragment(opts?: ShadowRootInit, template?: DocumentFragment|Node) {
-        const fragment = template || (this.constructor as ElementConstructor<InstanceType<E>>).getFragment();
+        const fragment = template || (this.constructor as ElementConstructor<InstanceType<C>>).getFragment();
         const shadow = this.attachShadow(opts || { mode: 'open' });
         if (fragment) shadow.appendChild(fragment);
         return shadow;
@@ -233,11 +233,11 @@ export function element<T extends typeof HTMLElement = typeof HTMLElement>(tag?:
       }
     }
 
-    renameClass<E>(Mixin);
+    renameClass<C>(MixinElement);
     if (tag && typeof window !== 'undefined') {
-      customElements.define(tag, Mixin);
+      customElements.define(tag, MixinElement);
     }
 
-    return Mixin;
+    return MixinElement;
   }
 }

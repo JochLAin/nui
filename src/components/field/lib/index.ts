@@ -19,6 +19,7 @@ function setupInput(input: HTMLNuiInputElement, target?: HTMLNuiFieldElement) {
   input.disabled = target?.disabled || null;
   input.name = target?.name || null;
   input.required = target?.required || null;
+  input.tabindex = target?.tabindex || null;
   input.value = target?.value || null;
   input.exportPartList.clear().forward();
 
@@ -63,7 +64,7 @@ export class HTMLNuiFieldElement extends HTMLNuiField {
 
   public constructor() {
     super();
-    this.attachShadowFragment();
+    this.attachShadowFragment({ mode: 'open', delegatesFocus: true });
     this.#setField(getType(this.type));
   }
 

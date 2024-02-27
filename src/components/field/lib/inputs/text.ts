@@ -3,8 +3,8 @@ import styles from "./text.scss";
 
 const template = `<input type="text" part="field input" />`;
 
-@field()
 @element('nui-input-text', { parts: ['field', 'input'], template, styles })
+@field()
 export class HTMLNuiInputTextElement extends HTMLNuiField {
   public readonly shadowRoot!: ShadowRoot;
   readonly #field: HTMLInputElement;
@@ -16,7 +16,7 @@ export class HTMLNuiInputTextElement extends HTMLNuiField {
   }
 
   constructor() {
-    super();
+    super({ init: { mode: 'open', delegatesFocus: true } });
     this.#field = this.shadowRoot.querySelector<HTMLInputElement>('input')!;
     this.attachField(this.#field);
   }

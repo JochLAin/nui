@@ -55,7 +55,7 @@ export function attribute<E extends HTMLElement, R extends AttributeValue = Attr
 export function attribute<E extends HTMLElement, R extends AttributeValue = AttributeType>(target: E, name: string, definition?: Omit<AttributeDefinition<E, R>, 'name'>): void;
 export function attribute<E extends HTMLElement, R extends AttributeValue = AttributeType>(target: E, definition: AttributeDefinition<E, R>): void;
 
-export function attribute<E extends HTMLElement, R extends AttributeValue = AttributeType>(transform?: AttributeTransform<E, R>, listener?: AttributeListener<E, R>): PropertyDecorator<E>;
+export function attribute<E extends HTMLElement, R extends AttributeValue = AttributeType>(transform?: AttributeTransform<E, R>|null, listener?: AttributeListener<E, R>): PropertyDecorator<E>;
 export function attribute<E extends HTMLElement, R extends AttributeValue = AttributeType>(transform?: AttributeTransform<E, R>): MethodDecorator<E, R>;
 export function attribute<
   C extends typeof HTMLElement,
@@ -114,13 +114,13 @@ export function attribute<
     throw new Error(`[Call @attribute] Invalid usage : name must be a string.`);
   }
 
-  if (typeof arg1 === 'object') {
+  if (arg1 !== null && typeof arg1 === 'object') {
     return function (target: C) {
       return decorateClass(target, arg1);
     }
   }
 
-  if (arg1 !== undefined && typeof arg1 !== 'function') {
+  if (arg1 !== undefined && arg1 !== null && typeof arg1 !== 'function') {
     throw new Error(`[Property @attribute] Invalid usage : transform must be a function, got ${typeof arg1}`);
   }
   if (arg2 !== undefined && typeof arg2 !== 'function') {
@@ -132,10 +132,7 @@ export function attribute<
 
   return function (target: E, name: string|symbol, descriptor?: PropertyDescriptor<E, R>) {
     if (typeof name === 'symbol') throw new Error(`[Property @attribute] Invalid usage : name must be a string, got symbol`);
-    if (descriptor?.get) {
-      console.log(target, descriptor);
-      throw new Error(`[Property @attribute] Invalid usage : getter is not supported`);
-    }
+    if (descriptor?.get) throw new Error(`[Property @attribute] Invalid usage : getter is not supported`);
     const listen = descriptor?.set ? chainListeners<E, R>(arg2 as AttributeListener<E, R>, descriptor.set) : arg2;
     return decorateClass(target.constructor as C, buildDefinition({}, name, arg1, listen, descriptor?.value));
   }

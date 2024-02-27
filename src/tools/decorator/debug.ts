@@ -7,19 +7,19 @@ export function debug<T extends HTMLNuiElementConstructor>(): ClassDecorator<T> 
     return decorateClass(targetClass, {
       listeners: {
         initializedCallback(...args) {
-          console.log('initializedCallback', this, ...args);
+          console.debug('initializedCallback', this, ...args);
         },
         connectedCallback(...args) {
-          console.log('connectedCallback', this, ...args);
+          console.debug('connectedCallback', this, ...args);
         },
         adoptedCallback(...args) {
-          console.log('adoptedCallback', this, ...args);
+          console.debug('adoptedCallback', this, ...args);
         },
         attributeChangedCallback(...args) {
-          console.log('attributeChangedCallback', this, ...args);
+          console.debug('attributeChangedCallback', this, ...args);
         },
         disconnectedCallback(...args) {
-          console.log('disconnectedCallback', this, ...args);
+          console.debug('disconnectedCallback', this, ...args);
         },
       },
     });
