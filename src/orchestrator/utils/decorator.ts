@@ -4,8 +4,10 @@ export type DecoratorMethod<T extends object, V = undefined> = (target: T, prope
 export type DecoratorParameter<T extends object> = (target: T, property: string|symbol|undefined, idx: number) => void;
 export type DecoratorProperty<T extends object> = (target: T, property: string|symbol) => void;
 export type Decorator<T extends object | Fn, V = undefined> = T extends Fn ? DecoratorClass<T> : DecoratorMethod<T, V> | DecoratorProperty<T> | DecoratorParameter<T>;
+export type DecoratorScope = 'class' | 'method' | 'property' | 'parameter';
 export type DecoratorVerifier<R> = boolean | string | Fn<string | void, [R, string]>;
-export type DecoratorVerifyArgument<R> = [string, R, DecoratorVerifier<R>];
+export type DecoratorArgument<R> = [string, R, DecoratorVerifier<R>];
+export type DecoratorArgumentValue<T extends DecoratorArgument<any>> = T extends DecoratorArgument<infer I> ? I : never;
 
 export type PropertyDescriptor<E extends object, T = undefined> = {
   configurable?: boolean;
@@ -16,7 +18,6 @@ export type PropertyDescriptor<E extends object, T = undefined> = {
   set?(this: E, value: T): void;
 };
 
-export type DecoratorScope = 'class' | 'method' | 'property' | 'parameter';
 
 export class DecoratorError extends Error {
   constructor(name: string, scope: DecoratorScope, message: string) {
@@ -25,14 +26,17 @@ export class DecoratorError extends Error {
   }
 }
 
-export function verifyOptions<R extends Decorator<object | Fn>>(name: string, scope: DecoratorScope, value: object, opts: Record<string, Decorator>, callback: () => R): R {
-
+export function verifyOptions<D extends Decorator<object | Fn>, O extends Record<string, any>>(name: string, scope: DecoratorScope, value: O, opts: { [K in keyof O]?: DecoratorVerifier<any> }, callback: (object: O) => D): D {
+  Object.entries(opts).forEach(([key, value]) => {
+    const test = opts[key];
+    
+  })
+  return callback(value);
 }
 
-export function verifyArguments<A extends DecoratorVerifyArgument<any>[], R extends Decorator<object | Fn>>(name: string, scope: DecoratorScope, args: A, callback: (...args: any[]) => R, prefix?: string): R {
+export function verifyArguments<D extends Decorator<object | Fn>, A extends DecoratorArgument<any>[]>(name: string, scope: DecoratorScope, args: A, callback: (...args: DecoratorArgumentValue<A[number]>) => D): D {
   for (let idx = 0; idx < args.length; idx++) {
-    const [prop, value, test] = args[idx];
-    const property = prefix ? `${prefix}.${prop}` : prop;
+    const [property, value, test] = args[idx];
 
     if (test === true && value === undefined) {
       throw new DecoratorError(name, scope, `Missing argument: ${property}`);
@@ -54,5 +58,5 @@ export function verifyArguments<A extends DecoratorVerifyArgument<any>[], R exte
     }
   }
 
-  return callback(...args.map(([_, value]) => value));
+  return callback(...args.map(([_, value]) => value) as DecoratorArgumentValue<A[number]>);
 }
