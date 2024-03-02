@@ -1,13 +1,16 @@
 import { HTMLNuiField, attribute, element, field } from "@nui-tools";
 import styles from "./text.scss";
 
-const template = `<input type="text" part="field input" />`;
-
-@element('nui-input-text', { parts: ['field', 'input'], template, styles })
 @field()
+@element('nui-input-text', {
+  delegatesFocus: true,
+  parts: ['field', 'input'],
+  template: `<input type="text" part="field input" />`,
+  styles
+})
 export class HTMLNuiInputTextElement extends HTMLNuiField {
   public readonly shadowRoot!: ShadowRoot;
-  readonly #field: HTMLInputElement;
+  #field!: HTMLInputElement;
 
   @attribute()
   public set value(value: string|null) {
@@ -15,13 +18,10 @@ export class HTMLNuiInputTextElement extends HTMLNuiField {
     this.setFormValue(value);
   }
 
-  constructor() {
-    super({ init: { mode: 'open', delegatesFocus: true } });
+  public initializedCallback = () => {
     this.#field = this.shadowRoot.querySelector<HTMLInputElement>('input')!;
     this.attachField(this.#field);
-  }
 
-  public initializedCallback = () => {
     this.#field.addEventListener('change', (evt) => {
       if (!this.#field.value) this.value = null;
       else this.value = this.#field.value;

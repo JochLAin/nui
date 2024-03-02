@@ -114,8 +114,8 @@ export class HTMLNuiField extends HTMLNuiElement implements FieldInterface {
     forwardName(value, this.#field);
   }
 
-  @attribute()
-  set tabindex(value: number|null) {
+  @attribute({ attributeName: 'tabindex' })
+  set tabIndex(value: number) {
     if (!this.#field) return;
     forwardTabIndex(value, this.#field);
   }
@@ -123,17 +123,13 @@ export class HTMLNuiField extends HTMLNuiElement implements FieldInterface {
   readonly #internals: ElementInternals;
   #field?: FieldType;
 
-  constructor(opts?: HTMLNuiElementOptions) {
-    super(opts);
+  constructor() {
+    super();
     this.#internals = this.attachInternals();
   }
 
   @lifecycle()
   [Symbol('connectedCallback')]() {
-    if (null === this.tabindex) {
-      this.tabindex = -1;
-    }
-
     if (!this.#field) return;
     this.setFormValue(this.#field);
     this.setValidity(this.#field);

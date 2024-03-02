@@ -1,9 +1,9 @@
 import { HTMLNuiElement, attribute, element } from "@nui-tools";
 import _ from "@nui-tools/i18n";
-import styles from "./index.scss";
 
-const parts = ['dialog', 'content', 'actions', 'cancel', 'valid'];
-const template = `
+@element('nui-confirm', {
+  parts: ['dialog', 'content', 'actions', 'cancel', 'valid'],
+  template: `
 <dialog part="dialog">
     <div class="content" part="content">
         <slot name="message">
@@ -19,12 +19,11 @@ const template = `
         </footer>
     </div>
 </dialog>
-`;
-
-@element('nui-confirm', { parts, template, styles })
+`,
+})
 export class HTMLNuiConfirmElement extends HTMLNuiElement {
   readonly shadowRoot!: ShadowRoot;
-  readonly #dialog: HTMLDialogElement;
+  #dialog!: HTMLDialogElement;
 
   @attribute()
   set open(value: boolean|null) {
@@ -35,12 +34,9 @@ export class HTMLNuiConfirmElement extends HTMLNuiElement {
     }
   }
 
-  constructor() {
-    super();
-    this.#dialog = this.shadowRoot.querySelector<HTMLDialogElement>('dialog[part~="dialog"]')!;
-  }
-
   initializedCallback() {
+    this.#dialog = this.shadowRoot.querySelector<HTMLDialogElement>('dialog[part~="dialog"]')!;
+
     const btnCancel = this.shadowRoot.querySelector<HTMLButtonElement>('button[part="cancel"]');
     const btnValid = this.shadowRoot.querySelector<HTMLButtonElement>('button[part="valid"]');
 

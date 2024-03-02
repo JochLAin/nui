@@ -1,5 +1,6 @@
 import type { AttributeDefinition, ElementInterface, LifecycleMemory } from "@nui-tools";
 import { DOMExportPartMap } from "@nui-tools/attribute";
+import { LIFECYCLE_CALLBACKS } from "@nui-tools/lifecycle";
 
 export type HTMLNuiElementConstructor<T extends HTMLNuiElementInterface = HTMLNuiElementInterface> = typeof HTMLNuiElement & {
   new (...args: any[]): T;
@@ -11,14 +12,6 @@ export type HTMLNuiElementInterface = InstanceType<typeof HTMLNuiElement>;
 export type HTMLNuiElementOptions = {
   init?: ShadowRootInit;
   template?: DocumentFragment|Node;
-};
-
-const LIFECYCLE_CALLBACKS: LifecycleMemory = {
-  initializedCallback: [],
-  connectedCallback: [],
-  adoptedCallback: [],
-  attributeChangedCallback: [],
-  disconnectedCallback: []
 };
 
 export abstract class HTMLNuiElement extends HTMLElement implements ElementInterface {
@@ -33,26 +26,13 @@ export abstract class HTMLNuiElement extends HTMLElement implements ElementInter
   public static getNode = <T extends ChildNode>(): T|null => null;
   public exportPartList!: DOMExportPartMap;
 
-  public constructor(opts?: HTMLNuiElementOptions) {
-    super();
-
-    if (opts?.template) {
-      this.attachShadowFragment(opts.init, opts.template);
-    } else {
-      const { template, styles } = this.constructor as HTMLNuiElementConstructor;
-      if (template || styles) {
-        this.attachShadowFragment(opts?.init);
-      }
-    }
-  }
-
   public adoptedCallback(): void {}
   public attributeChangedCallback(name: string, oldValue: string, newValue: string): void {}
   public connectedCallback(): void {}
   public disconnectedCallback(): void {}
   public initializedCallback(): void {}
 
-  protected attachShadowFragment(opts?: ShadowRootInit, template?: DocumentFragment|Node): void {};
+  protected attachShadowFragment(template?: DocumentFragment|Node, opts?: ShadowRootInit): void {};
   protected shadowQuerySelector = <T extends Element>(selector: string): T|null => null;
   protected shadowQuerySelectorAll = <T extends Element>(selector: string): T[] => [];
   protected shadowSlotQuerySelector = <T extends Element>(name: string, selector: string, opts?: AssignedNodesOptions): T|null => null;

@@ -2,8 +2,9 @@ import { HTMLNuiElement, attribute, element } from "@nui-tools";
 import { HTMLNuiCaretElement } from "@nui/caret";
 import styles from "./index.scss";
 
-const parts = ['details wrapper', 'summary toggle label', 'container', 'content'];
-const template = `
+@element('nui-collapse', {
+  parts: ['details wrapper', 'summary toggle label', 'container', 'content'],
+  template: `
 <details part="details wrapper">
   <summary part="summary toggle label">
     <slot name="toggle"></slot>
@@ -16,14 +17,14 @@ const template = `
     </div>
   </div>
 </details>
-`;
-
-@element('nui-collapse', { parts, template, styles })
+`,
+  styles
+})
 export class HTMLNuiCollapseElement extends HTMLNuiElement {
   readonly shadowRoot!: ShadowRoot;
-  #container: HTMLDivElement;
-  #details: HTMLDetailsElement;
-  #summary: HTMLElement;
+  #container!: HTMLDivElement;
+  #details!: HTMLDetailsElement;
+  #summary!: HTMLElement;
 
   @attribute()
   set open(value: boolean|null) {
@@ -33,15 +34,11 @@ export class HTMLNuiCollapseElement extends HTMLNuiElement {
     if (caret) caret.open = this.#details.open;
   }
 
-  constructor() {
-    super();
+  initializedCallback() {
     this.#details = this.shadowRoot.querySelector('details')!;
     this.#summary = this.shadowRoot.querySelector('summary')!;
     this.#container = this.shadowRoot.querySelector('.container')!;
-  }
 
-  initializedCallback() {
-    this.open = this.open;
     this.#details.addEventListener('toggle', this.#onToggle);
   }
 

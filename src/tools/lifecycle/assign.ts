@@ -6,6 +6,7 @@ export type LifecycleRecord<T extends HTMLElement> = {
   adoptedCallback: (this: T) => void;
   attributeChangedCallback: (this: T, name: string, oldValue: string, newValue: string) => void;
   disconnectedCallback: (this: T) => void;
+  [key: string]: (this: T, ...args: any[]) => void;
 }
 
 export type LifecycleKey<T extends HTMLElement> = keyof LifecycleRecord<T>;
@@ -17,17 +18,19 @@ export type LifecycleMemory<T extends HTMLElement = HTMLElement> = {
   [K in keyof LifecycleRecord<T>]: LifecycleListener<T, K>[];
 }
 
+export const LIFECYCLE_CALLBACKS: LifecycleMemory = {
+  initializedCallback: [],
+  connectedCallback: [],
+  adoptedCallback: [],
+  attributeChangedCallback: [],
+  disconnectedCallback: []
+};
+
 export function getLifecycles(target: typeof HTMLElement): LifecycleMemory {
   if ('lifecycleCallbacks' in target) {
     return target.lifecycleCallbacks as LifecycleMemory;
   }
-  return {
-    initializedCallback: [],
-    connectedCallback: [],
-    adoptedCallback: [],
-    attributeChangedCallback: [],
-    disconnectedCallback: [],
-  };
+  return LIFECYCLE_CALLBACKS;
 }
 
 export function assignMultipleLifecycles<

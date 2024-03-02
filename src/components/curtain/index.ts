@@ -1,8 +1,9 @@
 import { HTMLNuiElement, attribute, element } from "@nui-tools";
 import styles from "./index.scss";
 
-const parts = ['dialog', 'close', 'content'];
-const template = `
+@element('nui-curtain', {
+  parts: ['dialog', 'close', 'content'],
+  template: `
 <dialog part="dialog">
   <slot name="close">
     <button type="button" part="close">&times;</button>
@@ -11,9 +12,9 @@ const template = `
     <slot></slot>
   </div>
 </dialog>
-`;
-
-@element('nui-curtain', { parts, template, styles })
+`,
+  styles
+})
 export class HTMLNuiCurtainElement extends HTMLNuiElement {
   readonly shadowRoot!: ShadowRoot;
   readonly #dialog: HTMLDialogElement;

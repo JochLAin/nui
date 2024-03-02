@@ -1,11 +1,9 @@
-import type { AttributeDefinition, AttributeDictionary, AttributeValue } from "@nui-tools/attribute";
-import type { ClassDecorator } from "@nui-tools/decorator";
-import { LifecycleKey, LifecycleRecord, LifecycleMemory } from "@nui-tools/lifecycle";
+import type { AttributeDictionary, ClassDecorator, ExcludedConstructor, LifecycleKey, LifecycleRecord, LifecycleMemory } from "@nui-tools";
 import { DOMExportPartMap, callLifecycle, defineAttribute, lifecycle, renameClass, transformAttributeValue } from "@nui-tools";
 import { getPropertyAttributes } from "./attribute";
 import { getStaticValuesThroughPrototypes } from "./utils";
 
-export type ElementClass<C extends typeof HTMLElement = typeof HTMLElement> = Omit<C, 'prototype'> & ElementConstructor<InstanceType<C>>;
+export type ElementClass<C extends typeof HTMLElement = typeof HTMLElement> = ExcludedConstructor<C> & ElementConstructor<InstanceType<C>>;
 
 export type ElementConstructor<I extends HTMLElement = HTMLElement> = {
   new(...args: any[]): ElementInterface & I;
@@ -36,9 +34,10 @@ export interface ElementInterface extends HTMLElement {
   // shadowSlotQuerySelectorAll(name: string, selector: string, opts?: AssignedNodesOptions): Element[];
 }
 
-export type ElementOpts<T extends HTMLElement = HTMLElement> = {
+export type ElementOpts<T extends HTMLElement = HTMLElement> = Partial<ShadowRootInit> & {
   parts?: string[],
-  properties?: Record<string, Omit<AttributeDefinition<T, AttributeValue>, 'name'>|null>,
+  properties?: AttributeDictionary<T>,
+  conceal?: boolean,
   template?: string,
   styles?: string,
 }
@@ -141,17 +140,24 @@ export function element<T extends typeof HTMLElement = typeof HTMLElement>(tag?:
         const propertyAttributes = getPropertyAttributes(targetClass);
         const keys = Object.keys(propertyAttributes);
         for (let idx = 0; idx < keys.length; idx++) {
-          const { transform, listen, defaultValue } = propertyAttributes[keys[idx]];
-          defineAttribute(this as InstanceType<T>, keys[idx], transform, listen, defaultValue);
+          const { attributeName, transform, listen, defaultValue } = propertyAttributes[keys[idx]];
+          defineAttribute(this as InstanceType<T>, keys[idx], attributeName, transform, listen, defaultValue);
         }
 
         // Attach properties option to attribute
         if (opts?.properties) {
           const props = Object.keys(opts.properties);
           for (let idx = 0; idx < props.length; idx++) {
-            const { transform, listen, defaultValue } = opts.properties[props[idx]] || {};
-            defineAttribute(this as InstanceType<T>, props[idx], transform, listen, defaultValue);
+            const { attributeName, transform, listen, defaultValue } = opts.properties[props[idx]] || {};
+            defineAttribute(this as InstanceType<T>, props[idx], attributeName, transform, listen, defaultValue);
           }
+        }
+
+        if (!opts?.conceal && (template || styles)) {
+          this.attachShadowFragment(
+            buildFragment(template, styles),
+            { mode: 'open', ...opts },
+          );
         }
 
         this.initializedCallback();
@@ -182,10 +188,16 @@ export function element<T extends typeof HTMLElement = typeof HTMLElement>(tag?:
         callLifecycle(this, 'disconnectedCallback');
       }
 
-      protected attachShadowFragment(opts?: ShadowRootInit, template?: DocumentFragment|Node) {
-        const fragment = template || (this.constructor as ElementConstructor<InstanceType<C>>).getFragment();
-        const shadow = this.attachShadow(opts || { mode: 'open' });
-        if (fragment) shadow.appendChild(fragment);
+      protected attachShadowFragment(fragment?: DocumentFragment|Node, opts: ShadowRootInit = { mode: 'open' }) {
+        const shadow = this.attachShadow(opts);
+        try {
+          if (fragment) {
+            shadow.appendChild(fragment);
+          }
+        } catch (error: any) {
+          console.log(fragment);
+          console.error(error);
+        }
         return shadow;
       }
 

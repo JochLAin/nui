@@ -3,27 +3,27 @@ import { HTMLNuiElement, element, attribute, throttle } from "@nui-tools";
 import * as utils from "@nui-tools/canvas";
 import styles from "./index.scss";
 
-const template = document.createElement('template');
-template.innerHTML = `
-<style>${styles}</style>
-<img alt="Image cropped" />
-<canvas id="back"></canvas>
-<section id="backdrop"></section>
-<canvas id="front"></canvas>
-<input type="file" />
-`;
-
 enum ExportType {
   BASE_64 = 'base64',
   FILE = 'file',
 }
 
-@element('nui-cropper')
+@element('nui-cropper', {
+  parts: ['back', 'backdrop', 'front'],
+  template: `
+<canvas part="back"></canvas>
+<section part="backdrop"></section>
+<canvas part="front"></canvas>
+<input type="file" />
+<img />
+`,
+  styles,
+})
 export class HTMLNuiCropperElement extends HTMLNuiElement {
-  readonly #shadow: ShadowRoot;
-  readonly #front: CanvasRenderingContext2D;
-  readonly #back: CanvasRenderingContext2D;
-  readonly #img: HTMLImageElement;
+  readonly shadowRoot!: ShadowRoot;
+  #front!: CanvasRenderingContext2D;
+  #back!: CanvasRenderingContext2D;
+  #img!: HTMLImageElement;
   #scale: number = 1;
 
   @attribute()
@@ -67,14 +67,10 @@ export class HTMLNuiCropperElement extends HTMLNuiElement {
     );
   }
 
-  public constructor() {
-    super();
-
-    this.#shadow = this.attachShadow({ mode: 'open' });
-    this.#shadow.appendChild(template.content.cloneNode(true));
-    this.#front = (this.#shadow.getElementById('front') as HTMLCanvasElement).getContext('2d')!;
-    this.#back = (this.#shadow.getElementById('back') as HTMLCanvasElement).getContext('2d')!;
-    this.#img = this.#shadow.querySelector('img')!;
+  public initializedCallback() {
+    this.#front = this.shadowRoot.querySelector<HTMLCanvasElement>('[part="front"]')!.getContext('2d')!;
+    this.#back = this.shadowRoot.querySelector<HTMLCanvasElement>('[part="back"]')!.getContext('2d')!;
+    this.#img = this.shadowRoot.querySelector('img')!;
   }
 
   public connectedCallback() {

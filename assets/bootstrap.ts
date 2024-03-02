@@ -30,7 +30,8 @@ Promise.all([
   }, (error) => {
     // console.error(error);
     // return import('./debug/collapse');
-    return import('./experiments/form');
+    // return import('./experiments/form');
+    return import('./experiments/decorator_order');
   });
 }).catch((error) => {
   console.error(error);

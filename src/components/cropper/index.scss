@@ -20,12 +20,12 @@ canvas {
   image-rendering: pixelated;
 }
 
-canvas#front {
+canvas[part="front"] {
   background: var(--img-crop-background, #FFF);
   z-index: 3;
 }
 
-canvas#back {
+canvas[part="back"] {
   filter: blur(2px);
 }
 
@@ -37,7 +37,7 @@ input {
   visibility: hidden;
 }
 
-#backdrop {
+[part="backdrop"] {
   position: absolute;
   top: 0;
   left: 0;
@@ -51,12 +51,12 @@ input {
 }
 
 @media (prefers-color-scheme: dark) {
-  #backdrop {
+  [part="backdrop"] {
     background-color: var(--img-crop-backdrop, rgba(#000, .5));
   }
 }
 @media (prefers-color-scheme: light) {
-  #backdrop {
+  [part="backdrop"] {
     background-color: var(--img-crop-backdrop, rgba(#FFF, .5));
   }
 }

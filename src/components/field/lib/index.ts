@@ -5,40 +5,47 @@ import {
   HTMLNuiInputTextElement,
 } from "./inputs";
 
-export type HTMLNuiInputElement = HTMLNuiInputNumberElement|HTMLNuiInputTextElement;
-// export type HTMLNuiFormChoiceElement = HTMLSelectElement|HTMLNuiChoiceElement;
-// export type HTMLNuiFormFieldElement = HTMLNuiFormInputElement|HTMLNuiFormChoiceElement;
-export type HTMLNuiFieldType = HTMLNuiInputElement;
+export type HTMLNuiInputElement = HTMLInputElement|HTMLTextAreaElement|HTMLNuiInputNumberElement|HTMLNuiInputTextElement;
+export type HTMLNuiChoiceElement = HTMLSelectElement;
+export type HTMLNuiFieldType = HTMLNuiInputElement|HTMLNuiChoiceElement;
 
-const FieldTags = {
+export const FieldTags = {
   number: HTMLNuiInputNumberElement.tag,
   text: HTMLNuiInputTextElement.tag,
 }
 
-function setupInput(input: HTMLNuiInputElement, target?: HTMLNuiFieldElement) {
+export function setupFieldInput(input: HTMLNuiFieldType, target?: HTMLNuiFieldElement) {
   input.disabled = target?.disabled || null;
   input.name = target?.name || null;
   input.required = target?.required || null;
-  input.tabindex = target?.tabindex || null;
+  input.tabIndex = target?.tabIndex || -1;
   input.value = target?.value || null;
-  input.exportPartList.clear().forward();
+
+  if ('exportPartList' in input) {
+    input.exportPartList.clear().forward();
+  }
 
   return input;
 }
 
-function createInputNumber(target?: HTMLNuiFieldElement) {
+export function createFieldInputNumber(target?: HTMLNuiFieldElement) {
   const input = document.createElement(HTMLNuiInputNumberElement.tag!) as HTMLNuiInputNumberElement;
   customElements.upgrade(input);
-  return setupInput(input, target);
+  return setupFieldInput(input, target);
 }
 
-function createInputText(target?: HTMLNuiFieldElement) {
-  const input = document.createElement(HTMLNuiInputTextElement.tag!) as HTMLNuiInputTextElement;
-  customElements.upgrade(input);
-  return setupInput(input, target);
+export function createFieldInputText(target?: HTMLNuiFieldElement) {
+  try {
+    const input = document.createElement(HTMLNuiInputTextElement.tag!) as HTMLNuiInputTextElement;
+    customElements.upgrade(input);
+    return setupFieldInput(input, target);
+  } catch (error: any) {
+    console.log(target);
+    throw error;
+  }
 }
 
-function getType(type: string|null): keyof typeof FieldTags {
+export function getType(type: string|null): keyof typeof FieldTags {
   if (!Object.keys(FieldTags).includes(type || '')) {
     return 'text';
   }
@@ -46,7 +53,12 @@ function getType(type: string|null): keyof typeof FieldTags {
 }
 
 @field()
-@element('nui-field', { parts: ['field', 'input', 'select', 'textarea'] })
+@element('nui-field', {
+  parts: Array.from(new Set([
+    ...HTMLNuiInputNumberElement.parts,
+    ...HTMLNuiInputTextElement.parts,
+  ]))
+})
 export class HTMLNuiFieldElement extends HTMLNuiField {
   public readonly shadowRoot!: ShadowRoot;
   #field!: HTMLNuiFieldType;
@@ -64,14 +76,14 @@ export class HTMLNuiFieldElement extends HTMLNuiField {
 
   public constructor() {
     super();
-    this.attachShadowFragment({ mode: 'open', delegatesFocus: true });
+    this.attachShadow({ mode: 'open', delegatesFocus: true });
     this.#setField(getType(this.type));
   }
 
   #createField(type: string): HTMLNuiFieldType {
     switch (type) {
-      case 'number': return createInputNumber(this);
-      default: return createInputText(this);
+      case 'number': return createFieldInputNumber(this);
+      default: return createFieldInputText(this);
     }
   }
 

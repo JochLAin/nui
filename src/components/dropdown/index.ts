@@ -2,17 +2,18 @@ import { HTMLNuiElement, attribute, element } from "@nui-tools";
 import styles from "./index.scss";
 import { HTMLNuiCollapseElement } from "@nui/collapse";
 
-const parts = ['caret', 'toggle', 'content', 'wrapper'];
-const template = `
+@element('nui-dropdown', {
+  parts: ['caret', 'toggle', 'content', 'wrapper'],
+  template: `
 <nui-collapse>
   <slot name="toggle" slot="toggle"></slot>
   <slot name="content" slot="content">
     <slot></slot>
   </slot>
 </nui-collapse>
-`;
-
-@element('nui-dropdown', { parts, template, styles })
+`,
+  styles
+})
 export class HTMLNuiDropdownElement extends HTMLNuiElement {
   readonly shadowRoot!: ShadowRoot;
   readonly #collapse!: HTMLNuiCollapseElement;

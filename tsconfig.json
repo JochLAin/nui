@@ -30,6 +30,8 @@
     "strictNullChecks": true,
     "strict": true,
     "paths": {
+      "@nui-orchestrator/*": ["src/orchestrator/*"],
+      "@nui-orchestrator": ["src/orchestrator/index.ts"],
       "@nui-themes/*": ["src/themes/*"],
       "@nui-tools/*": ["src/tools/*"],
       "@nui-tools": ["src/tools/index.ts"],

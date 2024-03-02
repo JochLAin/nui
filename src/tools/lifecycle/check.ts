@@ -1,6 +1,4 @@
-import type { LifecycleMemory } from "./assign";
-
-export function checkLifecycle(lifecycle: string): lifecycle is keyof LifecycleMemory {
+export function checkLifecycle(lifecycle: string): lifecycle is string {
   return [
     'initializedCallback',
     'connectedCallback',

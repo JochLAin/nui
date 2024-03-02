@@ -72,8 +72,8 @@ async function getModuleFileContent(mod: string, file: string) {
 
   function replaceInternalModule(content: string) {
     return content
-      .replaceAll(/@nui-tools/g, path.relative(dirname, MODULES['@nui-tools']))
-      .replaceAll(/@nui/g, path.relative(dirname, MODULES['@nui']))
+      .replace(/@nui-tools/g, path.relative(dirname, MODULES['@nui-tools']))
+      .replace(/@nui/g, path.relative(dirname, MODULES['@nui']))
     ;
   }
 
