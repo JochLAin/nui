@@ -1,5 +1,5 @@
-import { DecoratorClass, DecoratorProperty, DecoratorMethod, DecoratorScope } from "../utils";
-import { DecoratorError, InvalidArgumentDecoratorError } from "../utils";
+import {DecoratorClass, DecoratorProperty, DecoratorMethod, DecoratorScope, VerifierDefinition} from "../utils";
+import { verify, verifyArguments, verifyOptions } from "../utils";
 
 type ThisType<T extends HTMLElement | typeof HTMLElement> = T extends typeof HTMLElement ? InstanceType<T> : T;
 export type AttributeListen<T extends HTMLElement, V extends AttributeValue = AttributeValue> = (this: T, value: V) => void;
@@ -36,10 +36,10 @@ type CheckDefinitionOptions = {
   mandatory?: AttributeDefinitionKeys,
 };
 
-type CheckDefinitionReturnType<
-  D extends Partial<AttributeDefinition<HTMLElement>>,
-  P extends CheckDefinitionOptions,
-> = AttributeDefinitionOmit<E, R, typeof keys[number]>;
+// type CheckDefinitionReturnType<
+//   D extends Partial<AttributeDefinition<HTMLElement>>,
+//   P extends CheckDefinitionOptions,
+// > = AttributeDefinitionOmit<E, R, typeof keys[number]>;
 
 function buildDefinition<E extends HTMLElement, R extends AttributeValue = AttributeType>(def: Partial<AttributeDefinition<E, R>>|null, propertyName?: string|symbol, attributeName?: string, transform?: Function|null, listen?: Function|null, reflect?: boolean, forward?: boolean, defaultValue?: R): AttributeDefinition<E, R> {
   propertyName ||= def?.propertyName;
@@ -157,19 +157,6 @@ function chainTransforms<
     if (undefined === transformedValue) value = transformedValue;
 
     return value as ReturnTypeChainTransform<E, T1, T2>;
-  }
-}
-
-function checkDefinition<
-  E extends HTMLElement,
-  R extends AttributeValue
->(
-  definition: Partial<AttributeDefinition<E, R>>|undefined,
-  opts: { scope: DecoratorScope, forbidden?: AttributeDefinitionKeys, mandatory?: AttributeDefinitionKeys },
-): void {
-  const forbiddenKey = opts?.forbidden?.find((key) => definition?.[key] !== undefined);
-  if (forbiddenKey) {
-    throw new InvalidArgumentDecoratorError('attribute', 'class', { name: forbiddenKey, forbidden: true });
   }
 }
 
@@ -396,13 +383,14 @@ export function decorate<
 ): void | DecoratorClass<C> | DecoratorMethod<E, R> | DecoratorProperty<E> {
   if (typeof arg1 === 'string') {
     if (typeof arg2 === 'object') {
-      if (!isCorrectDefinition(arg2, ['propertyName'])) {
-        throw new InvalidArgumentDecoratorError('attribute', 'class', { name: 'propertyName', forbidden: true });
+      if ('propertyName' in arg2) {
+        throw new Error(`[Class @attribute] Invalid usage : definition must have propertyName.`);
       }
-      if (arg3 !== undefined) {
-        throw new Error('[@attribute class] Too many arguments');
+      if (undefined !== arg3) {
+        throw new Error(`[Class @attribute] Invalid usage : too many arguments`);
       }
-      return (target: C) => decorateClass(target, buildDefinition(arg2, arg1));
+
+      return  (target: C) => decorateClass(target, buildDefinition(arg2, arg1));
     }
 
     if (arg2 !== undefined && typeof arg2 !== 'function') {
